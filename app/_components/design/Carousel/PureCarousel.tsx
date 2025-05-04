@@ -10,7 +10,7 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import Cards from "../Cards";
 
-const PureCarousel = () => {
+const PureCarousel = ({ data }) => {
   return (
     <Swiper
       // install Swiper modules
@@ -46,42 +46,21 @@ const PureCarousel = () => {
       onSwiper={(swiper) => console.log(swiper)}
       onSlideChange={() => console.log("slide change")}
     >
-      <SwiperSlide>
-        <Cards
-          color="#000000"
-          cardName="مشکی"
-          cardNumber="**** **** **** ****"
-          expireDate="**/**"
-          price={5000000}
-        />
-      </SwiperSlide>
-      <SwiperSlide>
-        <Cards
-          color="#2563EB"
-          cardName="آبی"
-          cardNumber="**** **** **** ****"
-          expireDate="**/**"
-          price={1000000}
-        />
-      </SwiperSlide>
-      <SwiperSlide>
-        <Cards
-          color="#9C25EB"
-          cardName="قرمز"
-          cardNumber="**** **** **** ****"
-          expireDate="**/**"
-          price={12000000}
-        />
-      </SwiperSlide>
-      <SwiperSlide>
-        <Cards
-          color="#000000"
-          cardName="مشکی"
-          cardNumber="**** **** **** ****"
-          expireDate="**/**"
-          price={12000000}
-        />
-      </SwiperSlide>
+      {data.map((item, key) => (
+        <SwiperSlide>
+
+          <Cards
+            color={item.cardColor}
+            cardName={item.title}
+            cardNumber="**** **** **** ****"
+            expireDate="**/**"
+            price={item?.fee}
+            realPrice={item?.price}
+          />
+        </SwiperSlide>
+      ))}
+
+
     </Swiper>
   );
 };
