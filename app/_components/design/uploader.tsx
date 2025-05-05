@@ -1,190 +1,205 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useDropzone } from "react-dropzone";
-import { IconButton, Button, LinearProgress, Tooltip } from "@mui/material";
+import { Box, Typography, LinearProgress } from "@mui/material";
+import Image from "next/image";
 
 const Uploader = ({
-    id,
-    location,
-    refetch,
-    setPhotos,
-    text = "آپلود تصویر",
-    photos,
-    type = "image",
-    isFull,
-    triggered,
-    setTriggered,
+  id,
+  location,
+  refetch,
+  text = "آپلود تصویر",
+  type = "image",
+  formik,
+  formikFieldName,
 }) => {
-    const [files, setFiles] = useState([]);
-    const [uploading, setUploading] = useState(false);
-    const [progress, setProgress] = useState(0);
-    const inputRef = useRef(null);
-    const statusRef = useRef();
-    const loadTotalRef = useRef();
+  const [files, setFiles] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [photo, setPhoto] = useState(null);
+  const statusRef = useRef();
+  const loadTotalRef = useRef();
 
-    const onDrop = useCallback(
-        async (acceptedFiles) => {
-            const validFiles = acceptedFiles.filter((file) => {
-                const isValidImage = type === "image" && /^image\/(jpeg|png|gif|webp)$/.test(file.type);
-                const isValidVideo = type === "video" && /^video\/(mp4|avi|mov)$/.test(file.type);
-                return isValidImage || isValidVideo;
-            });
+  const onDrop = useCallback(
+    async (acceptedFiles) => {
+      const validFiles = acceptedFiles.filter((file) => {
+        const isValidImage =
+          type === "image" && /^image\/(jpeg|png|gif|webp)$/.test(file.type);
+        const isValidVideo =
+          type === "video" && /^video\/(mp4|avi|mov)$/.test(file.type);
+        return isValidImage || isValidVideo;
+      });
 
-            if (validFiles.length === 0) {
-                toast.error("فایل معتبر انتخاب نشده است.");
-                return;
-            }
+      if (validFiles.length === 0) {
+        toast.error("فایل معتبر انتخاب نشده است.");
+        return;
+      }
 
-            const previewFiles = validFiles.map((file) =>
-                Object.assign(file, {
-                    preview: URL.createObjectURL(file),
-                })
-            );
+      const previewFiles = validFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
+      );
 
-            setFiles(previewFiles);
-            await uploadFiles(previewFiles);
-        },
-        [type]
-    );
+      setFiles(previewFiles);
+      await uploadFiles(previewFiles);
+    },
+    [type]
+  );
 
-    const { getInputProps } = useDropzone({
-        onDrop,
-        accept:
-            type === "image"
-                ? {
-                    "image/jpeg": [],
-                    "image/png": [],
-                    "image/gif": [],
-                    "image/webp": [],
-                }
-                : {
-                    "video/mp4": [],
-                    "video/avi": [],
-                    "video/mov": [],
-                },
-        noClick: true,
-        noKeyboard: true,
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    accept:
+      type === "image"
+        ? {
+            "image/jpeg": [],
+            "image/png": [],
+            "image/gif": [],
+            "image/webp": [],
+          }
+        : {
+            "video/mp4": [],
+            "video/avi": [],
+            "video/mov": [],
+          },
+    noClick: false,
+    noKeyboard: true,
+  });
+
+  const uploadFile = (file) => {
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const xhr = new XMLHttpRequest();
+      xhr.open(
+        "POST",
+        `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/${location}${
+          id ? `/${id}` : ""
+        }`
+      );
+
+      xhr.upload.addEventListener("progress", (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = (e.loaded / e.total) * 100;
+          setProgress(percentComplete);
+          if (loadTotalRef.current) {
+            loadTotalRef.current.innerHTML = `${e.loaded} آپلود شده از ${e.total}`;
+          }
+          if (statusRef.current) {
+            statusRef.current.innerHTML = `${Math.round(
+              percentComplete
+            )}% آپلود شد...`;
+          }
+        }
+      });
+
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(JSON.parse(xhr.responseText));
+        } else {
+          reject(new Error("Upload failed"));
+        }
+      };
+
+      xhr.onerror = () => reject(new Error("Upload failed"));
+      xhr.send(formData);
     });
+  };
 
-    const openFileDialog = () => {
-        inputRef.current?.click();
-    };
+  const uploadFiles = async (selectedFiles) => {
+    setUploading(true);
+    setProgress(0);
 
-    const uploadFile = (file) => {
-        return new Promise((resolve, reject) => {
-            const formData = new FormData();
-            formData.append("file", file);
+    for (let file of selectedFiles) {
+      try {
+        const result = await uploadFile(file);
+        toast.success(`${file.name} با موفقیت آپلود شد`);
 
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/${location}${id ? `/${id}` : ""}`);
+        const uploadedId = +result.result.id;
+        const uploadedFileName = result.result.fileName;
 
-            xhr.upload.addEventListener("progress", (e) => {
-                if (e.lengthComputable) {
-                    const percentComplete = (e.loaded / e.total) * 100;
-                    setProgress(percentComplete);
-                    if (loadTotalRef.current) {
-                        loadTotalRef.current.innerHTML = `${e.loaded} آپلود شده از ${e.total}`;
-                    }
-                    if (statusRef.current) {
-                        statusRef.current.innerHTML = `${Math.round(percentComplete)}% آپلود شد...`;
-                    }
-                }
-            });
+        setPhoto({ id: uploadedId, fileName: uploadedFileName });
 
-            xhr.onload = () => {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    resolve(JSON.parse(xhr.responseText));
-                } else {
-                    reject(new Error("Upload failed"));
-                }
-            };
-
-            xhr.onerror = () => reject(new Error("Upload failed"));
-            xhr.send(formData);
-        });
-    };
-
-    const uploadFiles = async (selectedFiles) => {
-        setUploading(true);
-        setProgress(0);
-
-        for (let file of selectedFiles) {
-            try {
-                const result = await uploadFile(file);
-                toast.success(`${file.name} با موفقیت آپلود شد`);
-                if (refetch) refetch();
-                if (triggered !== undefined && setTriggered) setTriggered(!triggered);
-
-                setPhotos((prev) => [
-                    ...prev,
-                    {
-                        fileName: result.result.fileName,
-                        id: +result.result.id,
-                    },
-                ]);
-            } catch (error) {
-                toast.error(`آپلود ${file.name} ناموفق بود`);
-            }
+        if (formik && formikFieldName) {
+          formik.setFieldValue(formikFieldName, uploadedId);
         }
 
-        setUploading(false);
-        setFiles([]);
-    };
+        if (refetch) refetch();
+      } catch (error) {
+        toast.error(`آپلود ${file.name} ناموفق بود`);
+      }
+    }
 
-    useEffect(() => {
-        return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
-    }, [files]);
+    setUploading(false);
+  };
 
-    return (
-        <div className="space-y-4">
-            {/* Trigger Button */}
-            {isFull ? (
-                <Button
-                    fullWidth
-                    onClick={openFileDialog}
-                    className="bg-primary text-white px-6 py-3 rounded-lg"
-                >
-                    {text}
-                </Button>
-            ) : (
-                <Tooltip title="آپلود فایل" arrow>
-                    <span>upload</span>
-                </Tooltip>
-            )}
+  useEffect(() => {
+    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, [files]);
 
-            {/* Hidden Input for File Picker */}
-            <input
-                type="file"
-                {...getInputProps()}
-                ref={inputRef}
-                style={{ display: "none" }}
-                multiple
-            />
+  const error =
+    formik.touched[formikFieldName] && !formik.values[formikFieldName];
 
-            {/* Preview + Upload Progress */}
-            {files.length > 0 && (
-                <div className="flex flex-wrap gap-4">
-                    {files.map((file) => (
-                        <div key={file.name} className="w-24">
-                            {type === "image" ? (
-                                <img src={file.preview} alt={file.name} className="w-full h-auto rounded" />
-                            ) : (
-                                <video src={file.preview} controls className="w-full h-auto rounded" />
-                            )}
-                        </div>
-                    ))}
-                </div>
-            )}
+  return (
+    <Box className="space-y-4">
+      <Box
+        {...getRootProps()}
+        sx={{
+          border: `2px dashed ${error ? "red" : "#ccc"}`,
+          borderRadius: "8px",
+          p: 3,
+          textAlign: "center",
+          cursor: "pointer",
+          backgroundColor: "#fafafa",
+          transition: "background 0.2s ease",
+          "&:hover": {
+            backgroundColor: "#f0f0f0",
+          },
+        }}
+      >
+        <input {...getInputProps()} multiple />
+        <Typography variant="body2" color="textSecondary">
+          برای {text} کلیک کنید یا فایل را بکشید و رها کنید
+        </Typography>
+        {error && (
+          <Typography color="red" variant="body2">
+            فایل {text} الزامی است.
+          </Typography>
+        )}
+      </Box>
 
-            {uploading && (
-                <div className="border p-4 border-gray-100 rounded-lg">
-                    <LinearProgress className="mt-2" variant="determinate" value={progress} />
-                    <p className="text-sm mt-2" ref={statusRef}></p>
-                    <p className="text-sm mt-1 text-gray-500" ref={loadTotalRef}></p>
-                </div>
-            )}
-        </div>
-    );
+      {/* پیش نمایش تصویر */}
+      {files.length > 0 && (
+        <Box sx={{ mt: 2 }}>
+          {files.map((file) => (
+            <div className="w-full">
+              <Image
+                className="rounded-lg w-full h-[100px] object-cover"
+                src={file.preview}
+                alt={file.name}
+                width={100}
+                height={100}
+                style={{ objectFit: "cover", borderRadius: "8px" }}
+              />
+            </div>
+          ))}
+        </Box>
+      )}
+
+      {uploading && (
+        <Box sx={{ p: 2, border: "1px solid #eee", borderRadius: "8px" }}>
+          <LinearProgress variant="determinate" value={progress} />
+          <Typography variant="body2" mt={1} ref={statusRef} />
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            ref={loadTotalRef}
+          />
+        </Box>
+      )}
+    </Box>
+  );
 };
 
 export default Uploader;

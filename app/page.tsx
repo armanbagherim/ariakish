@@ -24,17 +24,16 @@ const getVipCards = async () => {
     `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/vipBundleTypes`,
     {
       method: "GET",
-
     }
   );
   const cards = await data.json();
   return cards;
-}
+};
 
 export default async function Home() {
   const blogData = await getBlog();
   const { result: vipCards } = await getVipCards();
-  console.log(vipCards)
+  console.log(vipCards);
   const stickyPost = blogData.find((post) => post.sticky);
   const nonStickyPosts = blogData.filter((post) => !post.sticky);
   const firstColumnPosts = nonStickyPosts.slice(0, 2);
@@ -124,7 +123,7 @@ export default async function Home() {
             <div className="relative">
               <Link
                 target="_blank"
-                href={`${process.env.CLUB_URL}/login?redirect_back_url=/buyVipCard`}
+                href={`${process.env.NEXT_PUBLIC_CLUB_URL}/login?redirect_back_url=/buyVipCard`}
                 className="font-bold text-md rounded-2xl border-secondary text-secondary flex items-center"
               >
                 خرید کارت vip

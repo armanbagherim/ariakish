@@ -1,10 +1,10 @@
-'use client'
+"use client";
 import { TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { fetcher } from "../fetcher";
 import SearchSelect from "../SearchSelect";
 
-export default function AdditionalData({ data }) {
+function AdditionalData({ data }) {
   const [provinces, setProvinces] = useState(null);
   const [cities, setCities] = useState(null);
   const [neighborhoods, setNeighborhoods] = useState(null);
@@ -55,23 +55,34 @@ export default function AdditionalData({ data }) {
     }
   }, [data.values.address?.cityId]);
 
-  // Handle Select changes using dot notation
-  const handleSelectChange = (field, value) => {
-    data.setFieldValue(`address.${field}`, value?.id || null);
-  };
+  // Memoize handleSelectChange to prevent recreation
+  const handleSelectChange = useCallback(
+    (field, value) => {
+      data.setFieldValue(`address.${field}`, value?.id || null);
+    },
+    [data]
+  );
 
-  // Fields inside address object
-  const formFields = [
-    { name: "name", label: "نام آدرس" },
-    { name: "street", label: "خیابان" },
-    { name: "alley", label: "کوچه" },
-    { name: "plaque", label: "پلاک" },
-    { name: "floorNumber", label: "طبقه" },
-    { name: "postalCode", label: "کد پستی" },
-  ];
+  // Memoize formFields to prevent recreation
+  const formFields = useMemo(
+    () => [
+      { name: "name", label: "نام آدرس" },
+      { name: "street", label: "خیابان" },
+      { name: "alley", label: "کوچه" },
+      { name: "plaque", label: "پلاک" },
+      { name: "floorNumber", label: "طبقه" },
+      { name: "postalCode", label: "کد پستی" },
+    ],
+    []
+  );
+
+  // Debug re-renders
+  useEffect(() => {
+    console.log("AdditionalData component rendered");
+  });
 
   return (
-    <div className="grid grid-cols-3 gap-4 request">
+    <div className="grid md:grid-cols-2 grid-cols-1 lg:grid-cols-3 gap-4 request">
       {/* Province Select */}
       {provinces && (
         <SearchSelect
@@ -122,9 +133,13 @@ export default function AdditionalData({ data }) {
             value={data.values.address?.[field.name] || ""}
             onChange={data.handleChange}
             onBlur={data.handleBlur}
-            error={Boolean(data.errors.address?.[field.name] && data.touched.address?.[field.name])}
+            error={Boolean(
+              data.errors.address?.[field.name] &&
+                data.touched.address?.[field.name]
+            )}
             helperText={
-              data.touched.address?.[field.name] && data.errors.address?.[field.name]
+              data.touched.address?.[field.name] &&
+              data.errors.address?.[field.name]
             }
           />
         );
@@ -132,3 +147,5 @@ export default function AdditionalData({ data }) {
     </div>
   );
 }
+
+export default React.memo(AdditionalData);
