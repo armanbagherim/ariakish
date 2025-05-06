@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "blog.ariakish.com",
       },
+      {
+        protocol: "https",
+        hostname: "clubapi.ariakish.com",
+      },
     ],
   },
 };

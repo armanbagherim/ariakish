@@ -19,9 +19,21 @@ const getBlog = async () => {
   return posts;
 };
 
+const getVipCards = async () => {
+  const data = await fetch(
+    `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/vipBundleTypes`,
+    {
+      method: "GET",
+    }
+  );
+  const cards = await data.json();
+  return cards;
+};
+
 export default async function Home() {
   const blogData = await getBlog();
-
+  const { result: vipCards } = await getVipCards();
+  console.log(vipCards);
   const stickyPost = blogData.find((post) => post.sticky);
   const nonStickyPosts = blogData.filter((post) => !post.sticky);
   const firstColumnPosts = nonStickyPosts.slice(0, 2);
@@ -111,20 +123,16 @@ export default async function Home() {
             <div className="relative">
               <Link
                 target="_blank"
-                href="#"
+                href={`${process.env.NEXT_PUBLIC_CLUB_URL}/login?redirect_back_url=/buyVipCard`}
                 className="font-bold text-md rounded-2xl border-secondary text-secondary flex items-center"
               >
                 خرید کارت vip
-                <span className=" bg-red-700 text-sm text-white rounded-xl py-1 px-2 mr-2">
-                  به زودی
-                </span>
               </Link>
             </div>
           </div>
-          <Timer targetDate="2025-03-15T23:59:59" />
         </div>
         <div className="col-span-8">
-          <PureCarousel />
+          <PureCarousel data={vipCards} />
         </div>
       </div>
       <div className="grid  grid-cols-6 md:grid-cols-6 lg:grid-cols-12  gap-4 mb-16">

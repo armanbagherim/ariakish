@@ -7,6 +7,7 @@ interface ICard {
   expireDate: string;
   cardNumber: string;
   color: string;
+  realPrice?: number;
 }
 
 const Cards: React.FC<ICard> = (props) => {
@@ -42,16 +43,21 @@ const Cards: React.FC<ICard> = (props) => {
         <ellipse opacity="0.1" cx="19" cy="88" rx="84" ry="88" fill="black" />
       </svg>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-center">
         <span className="font-bold text-lg">{props.cardName}</span>
-        <Vip />
       </div>
-    <div className="text-center font-bold text-xl">
-        {props.price?.toLocaleString()} تومان
+      <div className="text-center font-bold text-xl">
+        <span className="text-xs">میزان اعتبار</span>
+        <div className="flex flex-row justify-center items-center gap-2">
+          {Number(props.price).toLocaleString()} تومان
+        </div>
       </div>
+
       <div className="flex items-center justify-between">
-        <span>{props.expireDate}</span>
-        <span>{props.cardNumber}</span>
+        <span className="text-xs">قیمت کارت</span>
+        <div className="flex flex-row justify-center font-bold items-center gap-2">
+          {Number(props.realPrice).toLocaleString()} تومان
+        </div>
       </div>
     </div>
   );

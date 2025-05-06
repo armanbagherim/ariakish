@@ -132,9 +132,7 @@ const Footer = () => {
                 </li>
                 <li className="flex items-center gap-2 mb-2 md:justify-center">
                   <span className="block w-[8px] h-[8px] bg-primary rounded-full"></span>
-                  <Link target="_blank" href="https://jaa-baar.com">
-                    جابار
-                  </Link>
+                  <Link href="/preRegisterOrganization">درخواست نمایندگی</Link>
                 </li>
               </ul>
             </div>
