@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "گارانتی و خدمات پس از فروش آریا کیش",
 };
 
-export default function page() {
+export default async function PreRegisterOrganization() {
   return (
     <div>
       <Module />

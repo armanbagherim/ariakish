@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useEffect, useCallback } from "react";
-import MapClient from "./MapClient";
+import dynamic from "next/dynamic";
+
+// Dynamically import MapClient with SSR disabled
+const MapClient = dynamic(() => import("./MapClient"), { ssr: false });
 
 export default function Map({ data, isAdmin = false }) {
   useEffect(() => {
@@ -31,8 +34,8 @@ export default function Map({ data, isAdmin = false }) {
   );
 
   // Get the default latitude and longitude based on isAdmin
-  const defaultLatitude = "35.65326"
-  const defaultLongitude = "51.35471"
+  const defaultLatitude = "35.65326";
+  const defaultLongitude = "51.35471";
 
   return (
     <div className="w-full relative block mb-8">
