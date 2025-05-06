@@ -33,7 +33,6 @@ const getVipCards = async () => {
 export default async function Home() {
   const blogData = await getBlog();
   const { result: vipCards } = await getVipCards();
-  console.log(vipCards);
   const stickyPost = blogData.find((post) => post.sticky);
   const nonStickyPosts = blogData.filter((post) => !post.sticky);
   const firstColumnPosts = nonStickyPosts.slice(0, 2);

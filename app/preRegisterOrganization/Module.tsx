@@ -69,7 +69,6 @@ function Module() {
     },
     // validationSchema,
     onSubmit: async (values) => {
-      console.log(values);
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/preRegistrationOrganizations`,
@@ -101,11 +100,6 @@ function Module() {
     },
     [formik]
   );
-
-  // Debug re-renders
-  React.useEffect(() => {
-    console.log("Module component rendered");
-  });
 
   return (
     <CacheProvider value={cacheRtl}>

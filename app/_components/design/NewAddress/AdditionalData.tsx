@@ -76,11 +76,6 @@ function AdditionalData({ data }) {
     []
   );
 
-  // Debug re-renders
-  useEffect(() => {
-    console.log("AdditionalData component rendered");
-  });
-
   return (
     <div className="grid md:grid-cols-2 grid-cols-1 lg:grid-cols-3 gap-4 request">
       {/* Province Select */}
