@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import AdditionalData from "./AdditionalData";
+import Map from "./Map";
 
 function NewAddress({ formik }) {
   // Debug re-renders
@@ -10,7 +11,7 @@ function NewAddress({ formik }) {
 
   return (
     <>
-      {/* <Map data={formik} /> */}
+      <Map isAdmin data={formik} />
       <AdditionalData data={formik} />
     </>
   );

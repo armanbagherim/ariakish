@@ -31,13 +31,8 @@ export default function Map({ data, isAdmin = false }) {
   );
 
   // Get the default latitude and longitude based on isAdmin
-  const defaultLatitude = isAdmin
-    ? data.values.address?.latitude ?? "35.65326"
-    : data.values.latitude ?? "35.65326";
-
-  const defaultLongitude = isAdmin
-    ? data.values.address?.longitude ?? "51.35471"
-    : data.values.longitude ?? "51.35471";
+  const defaultLatitude = "35.65326"
+  const defaultLongitude = "51.35471"
 
   return (
     <div className="w-full relative block mb-8">
