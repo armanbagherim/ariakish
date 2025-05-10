@@ -50,8 +50,8 @@ function Module() {
       postalAttachmentId: null,
       address: {
         name: "",
-        latitude: "",
-        longitude: "",
+        latitude: "35.65326",
+        longitude: "51.35471",
         provinceId: 0,
         cityId: 0,
         neighborhoodId: 0,

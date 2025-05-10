@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback, memo } from "react";
+// import "@neshan-maps-platform/mapbox-gl-react/dist/style.css";
 import mapboxgl from "@neshan-maps-platform/mapbox-gl";
 import Image from "next/image";
 
@@ -31,7 +32,7 @@ const Maps: React.FC<MapProps> = ({
 }) => {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const markerRef = useRef<HTMLDivElement>(null);
+  const markerRef = useRef<HTMLDivElement>(null); // Ref for the marker div
   const [currentLocation, setCurrentLocation] = useState<LocationState>({
     lat: null,
     lng: null,
@@ -39,51 +40,50 @@ const Maps: React.FC<MapProps> = ({
   const [lastLocation, setLastLocation] = useState<LocationState | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined" || !mapContainerRef.current) return;
+    if (mapContainerRef.current) {
+      mapRef.current = new mapboxgl.Map({
+        mapType: mapboxgl.Map.mapTypes.neshanVector,
+        container: mapContainerRef.current,
+        zoom: 12,
+        pitch: 0,
+        center: [defaultLocation.lng, defaultLocation.lat],
+        minZoom: 2,
+        maxZoom: 21,
+        trackResize: true,
+        mapKey: "web.406947dbe1494fccabfb752c9e53152f",
+        poi: false,
+        traffic: false,
+        mapTypeControllerOptions: {
+          show: false,
+        },
+      }) as unknown as mapboxgl.Map;
+    }
 
-    mapRef.current = new mapboxgl.Map({
-      mapType: mapboxgl.Map.mapTypes.neshanVector,
-      container: mapContainerRef.current,
-      zoom: 12,
-      pitch: 0,
-      center: [defaultLocation.lng, defaultLocation.lat],
-      minZoom: 2,
-      maxZoom: 21,
-      trackResize: true,
-      mapKey: "web.406947dbe1494fccabfb752c9e53152f",
-      poi: false,
-      traffic: false,
-      mapTypeControllerOptions: {
-        show: false,
-      },
-    }) as unknown as mapboxgl.Map;
+    return () => mapRef.current?.remove();
+  }, []);
 
+  useEffect(() => {
     const neshanMap = mapRef.current;
-    neshanMap.on("moveend", () => {
-      if (neshanMap) {
-        const center = neshanMap.getCenter();
-        const newLocation = { lat: center.lat, lng: center.lng };
+    if (neshanMap) {
+      neshanMap.on("moveend", () => {
+        if (neshanMap) {
+          const center = neshanMap.getCenter();
+          const newLocation = { lat: center.lat, lng: center.lng };
 
-        if (
-          !lastLocation ||
-          lastLocation.lat !== newLocation.lat ||
-          lastLocation.lng !== newLocation.lng
-        ) {
-          console.log("Location changed:", newLocation);
-          setCurrentLocation(newLocation);
-          setLastLocation(newLocation);
-          onLocationChange?.(newLocation);
+          if (
+            !lastLocation ||
+            lastLocation.lat !== newLocation.lat ||
+            lastLocation.lng !== newLocation.lng
+          ) {
+            console.log("Location changed:", newLocation);
+            setCurrentLocation(newLocation);
+            setLastLocation(newLocation);
+            onLocationChange?.(newLocation);
+          }
         }
-      }
-    });
-
-    return () => {
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
-    };
-  }, [defaultLocation, onLocationChange]);
+      });
+    }
+  }, []); // Empty dependency array, runs only once after map is initialized
 
   useEffect(() => {
     if (
@@ -95,6 +95,7 @@ const Maps: React.FC<MapProps> = ({
     ) {
       mapRef.current.setCenter([currentLocation.lng, currentLocation.lat]);
       if (markerRef.current) {
+        // Update marker position
         markerRef.current.style.left = `${getPixelX(
           currentLocation.lng,
           currentLocation.lat
@@ -115,7 +116,7 @@ const Maps: React.FC<MapProps> = ({
     lastLocation,
   ]);
 
-  const getPixelX = (lng: number, lat: number) => {
+  const getPixelX = (lng, lat) => {
     if (mapRef.current) {
       const point = mapRef.current.project([lng, lat]);
       return point.x;
@@ -123,7 +124,7 @@ const Maps: React.FC<MapProps> = ({
     return 0;
   };
 
-  const getPixelY = (lng: number, lat: number) => {
+  const getPixelY = (lng, lat) => {
     if (mapRef.current) {
       const point = mapRef.current.project([lng, lat]);
       return point.y;
