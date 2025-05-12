@@ -1,10 +1,23 @@
 import { Alert } from "../_components/design/icons";
 
-export default function Page() {
+const getData = async () => {
+  const data = await fetch(
+    `${process.env.BLOG_BASE_URL}/wp-json/wp/v2/pages/50`,
+    {
+      method: "GET",
+    }
+  );
+  const content = await data.json();
+  return content;
+};
+
+export default async function Page() {
+  const data = await getData();
+
   return (
     <div className="container mt-14 mx-auto px-4">
       <div className="border border-gray-300 rounded-3xl p-8">
-        <h1 className="text-md md:text-xl font-bold mb-4">
+        {/* <h1 className="text-md md:text-xl font-bold mb-4">
           شرایط استفاده از گارانتی
         </h1>
         <p className="text-md mb-4">
@@ -80,7 +93,11 @@ export default function Page() {
               کالا می باشد.
             </li>
           </ul>
-        </div>
+        </div> */}
+        <div
+          className="data-wrapper"
+          dangerouslySetInnerHTML={{ __html: data.content.rendered }}
+        ></div>
       </div>
     </div>
   );
