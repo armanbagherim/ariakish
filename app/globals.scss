@@ -402,3 +402,22 @@ legend.gfield_label.gform-field-label {
   justify-content: center;
   pointer-events: none !important;
 }
+
+
+.data-wrapper {
+  p {
+    margin-bottom: 10px;
+  }
+  hr {
+    margin: 15px 0;
+  }
+  ul {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #fef2f2;
+    li {
+      color: #991b1b;
+      margin-bottom: 10px;
+    }
+  }
+}
