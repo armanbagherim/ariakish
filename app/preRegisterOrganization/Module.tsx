@@ -187,7 +187,7 @@ function Module() {
                   </div>
                   <div>
                     <DatePicker
-                      label="تاریخ مجوز"
+                      label="تاریخ جواز کسب"
                       value={formik.values.licenseDate}
                       onChange={handleDateChange}
                       slotProps={{
@@ -264,7 +264,7 @@ function Module() {
 
                   <div>
                     <Typography variant="subtitle1" gutterBottom>
-                      تصویر قبض پستی
+                      تصویر تاییدیه کد پستی
                     </Typography>
                     <Uploader
                       location="v1/api/guarantee/anonymous/attachments/image"
