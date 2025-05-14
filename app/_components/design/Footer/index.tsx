@@ -6,6 +6,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { Instagram, Telegram, Twitter, Whatsapp } from "../icons";
+import Script from "next/script";
 
 const Footer = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,6 +52,17 @@ const Footer = () => {
 
   return (
     <>
+      <Script
+        id="muchat-agent"
+        type="module"
+        dangerouslySetInnerHTML={{
+          __html: `import Chatbox from 'https://cdn.mu.chat/embeds/dist/chatbox/index.js?v=2';
+             
+   Chatbox.initBubble({
+   agentId: 'cmaoe6qid00x5vjfme757x5ji',
+      });`
+        }}
+      />
       <div className="md:w-[60%] w-full border-[30px] border-white mx-auto bg-primary py-4 px-4 relative -bottom-[40px] rounded-[65px]">
         <div className="flex justify-between flex-col md:flex-row items-center">
           <span className="azarMehr text-white text-[20px] mb-4 md:mb-0">
