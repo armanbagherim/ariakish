@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
-import { useDropzone } from "react-dropzone";
 import { Box, Typography, LinearProgress } from "@mui/material";
 import Image from "next/image";
 
@@ -17,54 +16,66 @@ const Uploader = ({
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [photo, setPhoto] = useState(null);
+  const [isDragActive, setIsDragActive] = useState(false);
   const statusRef = useRef();
   const loadTotalRef = useRef();
+  const inputRef = useRef();
 
-  const onDrop = useCallback(
-    async (acceptedFiles) => {
-      const validFiles = acceptedFiles.filter((file) => {
-        const isValidImage =
-          type === "image" && /^image\/(jpeg|png|gif|webp)$/.test(file.type);
-        const isValidVideo =
-          type === "video" && /^video\/(mp4|avi|mov)$/.test(file.type);
-        return isValidImage || isValidVideo;
-      });
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(true);
+  }, []);
 
-      if (validFiles.length === 0) {
-        toast.error("فایل معتبر انتخاب نشده است.");
-        return;
-      }
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+  }, []);
 
-      const previewFiles = validFiles.map((file) =>
-        Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        })
-      );
+  const handleDrop = useCallback(
+    async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragActive(false);
 
-      setFiles(previewFiles);
-      await uploadFiles(previewFiles);
+      const droppedFiles = Array.from(e.dataTransfer.files);
+      await processFiles(droppedFiles);
     },
     [type]
   );
 
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept:
-      type === "image"
-        ? {
-            "image/jpeg": [],
-            "image/png": [],
-            "image/gif": [],
-            "image/webp": [],
-          }
-        : {
-            "video/mp4": [],
-            "video/avi": [],
-            "video/mov": [],
-          },
-    noClick: false,
-    noKeyboard: true,
-  });
+  const handleFileChange = useCallback(
+    async (e) => {
+      const selectedFiles = Array.from(e.target.files);
+      await processFiles(selectedFiles);
+    },
+    [type]
+  );
+
+  const processFiles = async (acceptedFiles) => {
+    const validFiles = acceptedFiles.filter((file) => {
+      const isValidImage =
+        type === "image" && /^image\/(jpeg|png|gif|webp)$/.test(file.type);
+      const isValidVideo =
+        type === "video" && /^video\/(mp4|avi|mov)$/.test(file.type);
+      return isValidImage || isValidVideo;
+    });
+
+    if (validFiles.length === 0) {
+      toast.error("فایل معتبر انتخاب نشده است.");
+      return;
+    }
+
+    const previewFiles = validFiles.map((file) =>
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      })
+    );
+
+    setFiles(previewFiles);
+    await uploadFiles(previewFiles);
+  };
 
   const uploadFile = (file) => {
     return new Promise((resolve, reject) => {
@@ -144,7 +155,10 @@ const Uploader = ({
   return (
     <Box className="space-y-4">
       <Box
-        {...getRootProps()}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        onClick={() => inputRef.current.click()}
         sx={{
           border: `2px dashed ${error ? "red" : "#ccc"}`,
           borderRadius: "8px",
@@ -158,9 +172,22 @@ const Uploader = ({
           },
         }}
       >
-        <input {...getInputProps()} multiple />
+        <input
+          type="file"
+          ref={inputRef}
+          style={{ display: "none" }}
+          accept={
+            type === "image"
+              ? "image/jpeg,image/png,image/gif,image/webp"
+              : "video/mp4,video/avi,video/mov"
+          }
+          multiple
+          onChange={handleFileChange}
+        />
         <Typography variant="body2" color="textSecondary">
-          برای {text} کلیک کنید یا فایل را بکشید و رها کنید
+          {isDragActive
+            ? "فایل‌ها را اینجا رها کنید ..."
+            : `برای ${text} کلیک کنید یا فایل را بکشید و رها کنید`}
         </Typography>
         {error && (
           <Typography color="red" variant="body2">
@@ -173,15 +200,24 @@ const Uploader = ({
       {files.length > 0 && (
         <Box sx={{ mt: 2 }}>
           {files.map((file) => (
-            <div className="w-full">
-              <Image
-                className="rounded-lg w-full h-[100px] object-cover"
-                src={file.preview}
-                alt={file.name}
-                width={100}
-                height={100}
-                style={{ objectFit: "cover", borderRadius: "8px" }}
-              />
+            <div className="w-full" key={file.name}>
+              {type === "image" ? (
+                <Image
+                  className="rounded-lg w-full h-[100px] object-cover"
+                  src={file.preview}
+                  alt={file.name}
+                  width={100}
+                  height={100}
+                  style={{ objectFit: "cover", borderRadius: "8px" }}
+                />
+              ) : (
+                <video
+                  className="rounded-lg w-full h-[100px] object-cover"
+                  src={file.preview}
+                  controls
+                  style={{ borderRadius: "8px" }}
+                />
+              )}
             </div>
           ))}
         </Box>
