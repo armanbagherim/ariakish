@@ -1,7 +1,9 @@
 import React, { useCallback, useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
-import { Box, Typography, LinearProgress } from "@mui/material";
+import { Box, Typography, LinearProgress, IconButton } from "@mui/material";
 import Image from "next/image";
+import axios from "axios";
+import { MdDelete } from "react-icons/md";
 
 const Uploader = ({
   id,
@@ -20,6 +22,7 @@ const Uploader = ({
   const statusRef = useRef();
   const loadTotalRef = useRef();
   const inputRef = useRef();
+  const cancelTokenSourceRef = useRef(null); // Store Axios cancel token
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -53,13 +56,53 @@ const Uploader = ({
     [type]
   );
 
+  const handleRemoveFile = useCallback(() => {
+    // Cancel ongoing upload if it exists
+    if (cancelTokenSourceRef.current) {
+      cancelTokenSourceRef.current.cancel("Upload cancelled by user");
+      cancelTokenSourceRef.current = null;
+    }
+
+    // Clear files and photo state
+    setFiles([]);
+    setPhoto(null);
+
+    // Reset upload states
+    setUploading(false);
+    setProgress(0);
+    if (statusRef.current) {
+      statusRef.current.innerHTML = "";
+    }
+    if (loadTotalRef.current) {
+      loadTotalRef.current.innerHTML = "";
+    }
+
+    // Reset Formik field value
+    if (formik && formikFieldName) {
+      formik.setFieldValue(formikFieldName, null);
+    }
+
+    toast.info("فایل حذف شد. می‌توانید فایل جدیدی آپلود کنید.");
+  }, [formik, formikFieldName]);
+
   const processFiles = async (acceptedFiles) => {
     const validFiles = acceptedFiles.filter((file) => {
-      const isValidImage =
-        type === "image" && /^image\/(jpeg|png|gif|webp)$/.test(file.type);
-      const isValidVideo =
-        type === "video" && /^video\/(mp4|avi|mov)$/.test(file.type);
-      return isValidImage || isValidVideo;
+      const fileType = file.type.toLowerCase();
+      if (type === "image") {
+        return (
+          fileType === "image/jpeg" ||
+          fileType === "image/png" ||
+          fileType === "image/gif" ||
+          fileType === "image/webp"
+        );
+      } else if (type === "video") {
+        return (
+          fileType === "video/mp4" ||
+          fileType === "video/avi" ||
+          fileType === "video/mov"
+        );
+      }
+      return false;
     });
 
     if (validFiles.length === 0) {
@@ -77,72 +120,97 @@ const Uploader = ({
     await uploadFiles(previewFiles);
   };
 
-  const uploadFile = (file) => {
-    return new Promise((resolve, reject) => {
-      const formData = new FormData();
-      formData.append("file", file);
+  const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
 
-      const xhr = new XMLHttpRequest();
-      xhr.open(
-        "POST",
+    // Create a new cancel token source
+    cancelTokenSourceRef.current = axios.CancelToken.source();
+
+    try {
+      const response = await axios.post(
         `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/${location}${
           id ? `/${id}` : ""
-        }`
+        }`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          cancelToken: cancelTokenSourceRef.current.token,
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.lengthComputable) {
+              const percentComplete =
+                (progressEvent.loaded / progressEvent.total) * 100;
+              setProgress(percentComplete);
+              if (loadTotalRef.current) {
+                loadTotalRef.current.innerHTML = `${progressEvent.loaded} آپلود شده از ${progressEvent.total}`;
+              }
+              if (statusRef.current) {
+                statusRef.current.innerHTML = `${Math.round(
+                  percentComplete
+                )}% آپلود شد...`;
+              }
+            }
+          },
+        }
       );
 
-      xhr.upload.addEventListener("progress", (e) => {
-        if (e.lengthComputable) {
-          const percentComplete = (e.loaded / e.total) * 100;
-          setProgress(percentComplete);
-          if (loadTotalRef.current) {
-            loadTotalRef.current.innerHTML = `${e.loaded} آپلود شده از ${e.total}`;
-          }
-          if (statusRef.current) {
-            statusRef.current.innerHTML = `${Math.round(
-              percentComplete
-            )}% آپلود شد...`;
-          }
-        }
-      });
-
-      xhr.onload = () => {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(JSON.parse(xhr.responseText));
-        } else {
-          reject(new Error("Upload failed"));
-        }
-      };
-
-      xhr.onerror = () => reject(new Error("Upload failed"));
-      xhr.send(formData);
-    });
+      // Clear cancel token after successful upload
+      cancelTokenSourceRef.current = null;
+      return response.data;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        console.log("Upload cancelled:", error.message);
+      } else {
+        console.error("Upload Error:", {
+          message: error.message,
+          response: error.response
+            ? {
+                status: error.response.status,
+                statusText: error.response.statusText,
+                data: error.response.data,
+              }
+            : "No response received",
+        });
+        throw error;
+      }
+    }
   };
 
   const uploadFiles = async (selectedFiles) => {
     setUploading(true);
     setProgress(0);
 
-    for (let file of selectedFiles) {
-      try {
-        const result = await uploadFile(file);
-        toast.success(`${file.name} با موفقیت آپلود شد`);
+    try {
+      const result = await uploadFile(selectedFiles[0]);
+      toast.success(`${selectedFiles[0].name} با موفقیت آپلود شد`);
 
-        const uploadedId = +result.result.id;
-        const uploadedFileName = result.result.fileName;
+      const uploadedId = +result.result.id;
+      const uploadedFileName = result.result.fileName;
 
-        setPhoto({ id: uploadedId, fileName: uploadedFileName });
+      setPhoto({ id: uploadedId, fileName: uploadedFileName });
 
-        if (formik && formikFieldName) {
-          formik.setFieldValue(formikFieldName, uploadedId);
-        }
+      if (formik && formikFieldName) {
+        formik.setFieldValue(formikFieldName, uploadedId);
+      }
 
-        if (refetch) refetch();
-      } catch (error) {
-        toast.error(`آپلود ${file.name} ناموفق بود`);
+      if (refetch) refetch();
+    } catch (error) {
+      if (!axios.isCancel(error)) {
+        console.error("Upload Error:", error);
+        toast.error(`آپلود ${selectedFiles[0].name} ناموفق بود`);
+      }
+    } finally {
+      setUploading(false);
+      setProgress(0);
+      if (statusRef.current) {
+        statusRef.current.innerHTML = "";
+      }
+      if (loadTotalRef.current) {
+        loadTotalRef.current.innerHTML = "";
       }
     }
-
-    setUploading(false);
   };
 
   useEffect(() => {
@@ -181,7 +249,6 @@ const Uploader = ({
               ? "image/jpeg,image/png,image/gif,image/webp"
               : "video/mp4,video/avi,video/mov"
           }
-          multiple
           onChange={handleFileChange}
         />
         <Typography variant="body2" color="textSecondary">
@@ -200,10 +267,17 @@ const Uploader = ({
       {files.length > 0 && (
         <Box sx={{ mt: 2 }}>
           {files.map((file) => (
-            <div className="w-full" key={file.name}>
+            <Box
+              key={file.name}
+              sx={{
+                width: "100%",
+                position: "relative",
+                display: "inline-block",
+              }}
+            >
               {type === "image" ? (
                 <Image
-                  className="rounded-lg w-full h-[100px] object-cover"
+                  className="rounded-lg w-full h-[100px]"
                   src={file.preview}
                   alt={file.name}
                   width={100}
@@ -212,13 +286,28 @@ const Uploader = ({
                 />
               ) : (
                 <video
-                  className="rounded-lg w-full h-[100px] object-cover"
+                  className="rounded-lg w-full h-[100px]"
                   src={file.preview}
                   controls
                   style={{ borderRadius: "8px" }}
                 />
               )}
-            </div>
+              <IconButton
+                onClick={handleRemoveFile}
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  color: "white",
+                  "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.8)" },
+                }}
+                size="small"
+                aria-label="حذف فایل"
+              >
+                <MdDelete />
+              </IconButton>
+            </Box>
           ))}
         </Box>
       )}
