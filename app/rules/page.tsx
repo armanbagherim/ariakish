@@ -2,7 +2,7 @@ import { Alert } from "../_components/design/icons";
 
 const getData = async () => {
   const data = await fetch(
-    `${process.env.BLOG_BASE_URL}/wp-json/wp/v2/pages/50`,
+    `${process.env.NEXT_PUBLIC_BLOG_BASE_URL}/wp-json/wp/v2/pages/50`,
     {
       method: "GET",
     }

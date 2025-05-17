@@ -35,15 +35,11 @@ const theme = createTheme({
 });
 
 function Module() {
-  const [licensePhotos, setLicensePhotos] = React.useState([]);
-  const [nationalPhotos, setNationalPhotos] = React.useState([]);
-  const [estatePhotos, setEstatePhotos] = React.useState([]);
-  const [postalPhotos, setPostalPhotos] = React.useState([]);
-
   const formik = useFormik({
     initialValues: {
       title: "",
       licenseDate: new Date(),
+      licenseCode: null,
       licenseAttachmentId: null,
       nationalAttachmentId: null,
       estateAttachmentId: null,
@@ -67,8 +63,30 @@ function Module() {
         lastname: "",
       },
     },
-    // validationSchema,
+    validationSchema,
     onSubmit: async (values) => {
+      // Check for missing file uploads
+      const missingFiles = [];
+      if (!values.licenseAttachmentId) {
+        missingFiles.push("تصویر پروانه کسب");
+      }
+      if (!values.nationalAttachmentId) {
+        missingFiles.push("تصویر کارت ملی");
+      }
+      if (!values.estateAttachmentId) {
+        missingFiles.push("تصویر سند ملک");
+      }
+      if (!values.postalAttachmentId) {
+        missingFiles.push("تصویر تاییدیه کد پستی");
+      }
+
+      if (missingFiles.length > 0) {
+        missingFiles.forEach((file) => {
+          toast.error(`${file} الزامی است`);
+        });
+        return;
+      }
+
       try {
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/preRegistrationOrganizations`,
@@ -84,10 +102,13 @@ function Module() {
         if (response.ok) {
           const data = await response.json();
           toast.success("اطلاعات با موفقیت ارسال شد");
+          formik.resetForm(); // Reset form after successful submission
         } else {
-          toast.error("ارسال اطلاعات با مشکل مواجه شد");
+          const errorData = await response.json();
+          toast.error(errorData.message || "ارسال اطلاعات با مشکل مواجه شد");
         }
       } catch (error) {
+        console.error("Submission Error:", error);
         toast.error("خطا در ارسال اطلاعات");
       }
     },
@@ -109,7 +130,6 @@ function Module() {
             <form onSubmit={formik.handleSubmit} className="space-y-8">
               <section>
                 <h2 className="text-xl font-bold mb-4">اطلاعات تماس</h2>
-
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <TextField
@@ -169,12 +189,11 @@ function Module() {
               </section>
               <section>
                 <h2 className="text-xl font-bold mb-4">اطلاعات کلی</h2>
-
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <TextField
                       fullWidth
-                      label="عنوان"
+                      label="نام واحد صنفی"
                       name="title"
                       value={formik.values.title}
                       onChange={formik.handleChange}
@@ -206,19 +225,17 @@ function Module() {
                   <div>
                     <TextField
                       fullWidth
-                      label="کد پیوست مجوز"
-                      name="licenseAttachmentId"
-                      type="number"
-                      value={formik.values.licenseAttachmentId}
+                      label="شناسه جواز کسب"
+                      name="licenseCode"
+                      value={formik.values.licenseCode}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       error={
-                        formik.touched.licenseAttachmentId &&
-                        Boolean(formik.errors.licenseAttachmentId)
+                        formik.touched.licenseCode &&
+                        Boolean(formik.errors.licenseCode)
                       }
                       helperText={
-                        formik.touched.licenseAttachmentId &&
-                        formik.errors.licenseAttachmentId
+                        formik.touched.licenseCode && formik.errors.licenseCode
                       }
                     />
                   </div>
@@ -227,7 +244,6 @@ function Module() {
 
               <section>
                 <h2 className="text-xl font-bold mb-4">آپلود تصاویر</h2>
-
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
                     <Typography variant="subtitle1" gutterBottom>
@@ -239,7 +255,6 @@ function Module() {
                       formikFieldName="licenseAttachmentId"
                     />
                   </div>
-
                   <div>
                     <Typography variant="subtitle1" gutterBottom>
                       تصویر کارت ملی
@@ -250,10 +265,9 @@ function Module() {
                       formikFieldName="nationalAttachmentId"
                     />
                   </div>
-
                   <div>
                     <Typography variant="subtitle1" gutterBottom>
-                      تصویر سند ملک
+                      تصویر نمای بیرون واحد صنفی
                     </Typography>
                     <Uploader
                       location="v1/api/guarantee/anonymous/attachments/image"
@@ -261,10 +275,9 @@ function Module() {
                       formikFieldName="estateAttachmentId"
                     />
                   </div>
-
                   <div>
                     <Typography variant="subtitle1" gutterBottom>
-                      تصویر تاییدیه کد پستی
+                      تصویر داخل واحد صنفی
                     </Typography>
                     <Uploader
                       location="v1/api/guarantee/anonymous/attachments/image"
@@ -281,7 +294,12 @@ function Module() {
               </section>
 
               <section className="text-left mt-6">
-                <Button type="submit" variant="contained" color="primary">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={formik.isSubmitting}
+                >
                   ثبت
                 </Button>
               </section>

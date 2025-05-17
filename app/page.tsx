@@ -13,7 +13,7 @@ import Timer from "./_components/design/Timer";
 
 const getBlog = async () => {
   const data = await fetch(
-    `${process.env.BLOG_BASE_URL}/wp-json/wp/v2/posts?_embed`
+    `${process.env.NEXT_PUBLIC_BLOG_BASE_URL}/wp-json/wp/v2/posts?_embed`
   );
   const posts = await data.json();
   return posts;
@@ -122,7 +122,7 @@ export default async function Home() {
             <div className="relative">
               <Link
                 target="_blank"
-                href={`${process.env.NEXT_PUBLIC_CLUB_URL}/login?redirect_back_url=/buyVipCard`}
+                href={`${process.env.NEXT_PUBLIC_CLUB_URL}/login?redirect_back_url=/BuyVipCard`}
                 className="font-bold text-md rounded-2xl border-secondary text-secondary flex items-center"
               >
                 خرید کارت vip

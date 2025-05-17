@@ -51,7 +51,7 @@ export default function Map({ data, isAdmin = false }) {
   ]);
 
   return (
-    <div className="w-full relative block mb-8">
+    <div className="w-full relative block mb-12 bg-gray-100">
       <MapClient
         height={400}
         defaultLocation={defaultLocation}
