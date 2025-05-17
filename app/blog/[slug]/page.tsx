@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 async function getPost(id: string) {
   const res = await fetch(
-    `${process.env.BLOG_BASE_URL}/wp-json/wp/v2/posts?slug=${id}&_embed`,
+    `${process.env.NEXT_PUBLIC_BLOG_BASE_URL}/wp-json/wp/v2/posts?slug=${id}&_embed`,
     {
       cache: "force-cache",
     }
