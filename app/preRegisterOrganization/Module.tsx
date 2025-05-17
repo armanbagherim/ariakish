@@ -267,9 +267,7 @@ function Module() {
                         }
                         helperText={
                           formik.touched.user?.phoneNumber &&
-                          (typeof formik.errors.user?.phoneNumber === "string"
-                            ? formik.errors.user.phoneNumber
-                            : "شماره تماس نامعتبر است")
+                          formik.errors.user?.phoneNumber
                         }
                       />
                     </div>
