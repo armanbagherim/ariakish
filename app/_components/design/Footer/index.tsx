@@ -60,7 +60,7 @@ const Footer = () => {
              
    Chatbox.initBubble({
    agentId: 'cmaoe6qid00x5vjfme757x5ji',
-      });`
+      });`,
         }}
       />
       <div className="md:w-[60%] w-full border-[30px] border-white mx-auto bg-primary py-4 px-4 relative -bottom-[40px] rounded-[65px]">
