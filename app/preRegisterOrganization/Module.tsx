@@ -19,7 +19,7 @@ import { CacheProvider } from "@emotion/react";
 import rtlPlugin from "stylis-plugin-rtl";
 import { prefixer } from "stylis";
 import Uploader from "../_components/design/uploader";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { validationSchema } from "./schema";
 import createCache from "@emotion/cache";
 
@@ -34,10 +34,11 @@ const theme = createTheme({
   typography: { fontFamily: "IRANSansX" },
 });
 
-function Module() {
+function Module({ proviences }) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [trackingId, setTrackingId] = useState(null);
-
+  const [shouldShowAddress, setShouldShowAddress] = useState(false);
+  const [tempCity, setTempCity] = useState(null);
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -52,8 +53,6 @@ function Module() {
         latitude: "35.65326",
         longitude: "51.35471",
         provinceId: 0,
-        cityId: 0,
-        neighborhoodId: 0,
         street: "",
         alley: "",
         plaque: "",
@@ -88,8 +87,6 @@ function Module() {
           latitude: true,
           longitude: true,
           provinceId: true,
-          cityId: true,
-          neighborhoodId: true,
           street: true,
           alley: true,
           plaque: true,
@@ -168,7 +165,7 @@ function Module() {
         }
       } catch (error) {
         console.error("Submission Error:", error);
-        toast.error("خطا در ارسال اطلاعات");
+        toast.error(error.message || "ارسال اطلاعات با مشکل مواجه شد");
       } finally {
         setSubmitting(false);
       }
@@ -182,6 +179,62 @@ function Module() {
     },
     [formik]
   );
+
+
+
+  const normalizePersianText = (text) => {
+    if (!text) return "";
+    // Replace Arabic "ی" (U+064A) with Persian "ي" (U+06CC)
+    return text.replace(/ی/g, "ي").trim();
+  };
+
+  const fetchAddress = async () => {
+    try {
+      const response = await fetch(
+        `https://api.neshan.org/v5/reverse?lat=${formik.values.address.latitude}&lng=${formik.values.address.longitude}`,
+        {
+          method: "GET",
+          headers: {
+            "Api-Key": "service.67711799b0114ce5aa1380ba7b2a2f4b",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch address");
+      }
+      const result = await response.json();
+      if (result.status === "OK") {
+        // Set tempCity for NewAddress component
+        setTempCity(result.state);
+
+        // Normalize the state by removing "استان" and standardizing "ی"
+        const normalizedState = normalizePersianText(result.state.replace("استان", ""));
+        console.log("Normalized State:", normalizedState); // Logs "خراسان رضوي"
+
+        // Find the matching province from proviences
+        const matchedProvince = proviences.find(
+          (province) => normalizePersianText(province.name) === normalizedState
+        );
+
+        // Set provinceId in Formik if a match is found
+        if (matchedProvince) {
+          console.log("Matched Province:", matchedProvince); // Logs { id: 11, name: "خراسان رضوي", slug: "KHR" }
+          formik.setFieldValue("address.provinceId", matchedProvince.id);
+        } else {
+          console.warn(`No province found for ${normalizedState}`);
+        }
+
+        // Set other address fields
+        formik.setFieldValue("address.street", result.formatted_address);
+        setShouldShowAddress(true);
+      }
+    } catch (error) {
+      setShouldShowAddress(false);
+      toast.error("خطا در دریافت آدرس");
+      console.error("Error fetching address:", error);
+    }
+  };
+
 
   return (
     <CacheProvider value={cacheRtl}>
@@ -375,7 +428,7 @@ function Module() {
                 </section>
                 <section>
                   <h2 className="text-xl font-bold mb-4">اطلاعات آدرس</h2>
-                  <NewAddress formik={formik} />
+                  <NewAddress proviences={proviences} tempCity={tempCity} shouldShowAddress={shouldShowAddress} fetchAddress={fetchAddress} formik={formik} />
                 </section>
                 <section className="text-left mt-6">
                   <Button

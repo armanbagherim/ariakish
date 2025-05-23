@@ -1,12 +1,13 @@
 "use client";
 
+import { Button } from "@mui/material";
 import dynamic from "next/dynamic";
 import React, { useEffect, useCallback, useMemo } from "react";
 
 // ✅ Move dynamic outside the component
 const MapClient = dynamic(() => import("./MapClient"), { ssr: false });
 
-export default function Map({ data, isAdmin = false }) {
+export default function Map({ data, isAdmin = false, fetchAddress }) {
   useEffect(() => {
     console.log("updated values in UseEffect", data.values);
   }, [data]);
@@ -51,12 +52,18 @@ export default function Map({ data, isAdmin = false }) {
   ]);
 
   return (
-    <div className="w-full relative block mb-12 bg-gray-100">
-      <MapClient
-        height={400}
-        defaultLocation={defaultLocation}
-        onLocationChange={handleLocationChange}
-      />
+    <div>
+      <div className="w-full relative block mb-4 bg-gray-100">
+        <MapClient
+          height={400}
+          defaultLocation={defaultLocation}
+          onLocationChange={handleLocationChange}
+        />
+      </div>
+      <div className="mb-4">
+        <Button onClick={fetchAddress} variant="contained" color="primary" fullWidth>دریافت آدرس از روی این موقعیت</Button>
+      </div>
+
     </div>
   );
 }

@@ -40,7 +40,7 @@ export default async function Home() {
 
   return (
     <div className="container mx-auto pt-10 md:pt-28 px-4 md:px-0">
-      <div className="grid grid-cols-1 md:grid-cols-2 items-center pb- md:pb-14">
+      <div className="grid grid-cols-1 md:grid-cols-2 items-center pb- md:pb-14 md:mb-8">
         <div>
           <h1 className="text-[28px] azarMehr text-primary mb-4 ">
             گارانتی آریا کیش
@@ -60,12 +60,12 @@ export default async function Home() {
             >
               شرایط گارانتی
             </Link>
-            <Link
+            {/* <Link
               href="#about"
               className="px-3 py-3 border text-md rounded-2xl border-secondary text-secondary"
             >
               درباره ما
-            </Link>
+            </Link> */}
           </div>
         </div>
         <div className="-order-1 md:order-2 md:mb-0 md:p-8 mb-8 md:px-12 px-0">
@@ -79,7 +79,7 @@ export default async function Home() {
           />
         </div>
       </div>
-      <div id="about" className="md:px-[10%] block py-12 mb-8 md:mb-20">
+      {/* <div id="about" className="md:px-[10%] block py-12 mb-8 md:mb-20">
         <div className="text-center drop md:px-[10%] px-8 md:py-[50px] py-6 rounded-[40px] md:rounded-[70px]">
           <h2 className="md:text-[28px] text-lg azarMehr text-secondary mb-4">
             درباره ما
@@ -94,7 +94,7 @@ export default async function Home() {
             انتخاب شما، افتخار ماست.
           </p>
         </div>
-      </div>
+      </div> */}
 
       <div className="flex justify-center mb-8 md:mb-20">
         <div className="hidden md:block px-16">
@@ -115,7 +115,7 @@ export default async function Home() {
         <div className="col-span-3">
           <h4 className="text-[26px] font-black mb-4">کارت VIP آریا کیش</h4>
           <p className="text-[14px] mb-4">
-            از طریق کارت گارانتی VIP می توانید به مقدار اعتبار اختصاص داده شده
+            از طریق گارانتی VIP می توانید به مقدار اعتبار اختصاص داده شده
             به هر کارت، از خدمات گارانتی استفاده کنید.
           </p>
           <div className="flex gap-4 mb-6">
@@ -187,18 +187,11 @@ export default async function Home() {
                   />
                 )}
                 <div>
-                  <Link
-                    className="text-[#298C89] bg-[#EAF4F4] rounded-xl p-2 mb-4 inline-block"
-                    href={post?._embedded["wp:term"][0][0].slug}
-                  >
-                    {post?._embedded["wp:term"][0][0].name}
-                  </Link>
+
                   <h4 className="azarMehr text-base mb-4">
                     {post?.title?.rendered}
                   </h4>
-                  <p className="flex items-center gap-2 ">
-                    <Clock color={"black"} /> زمان مطالعه: 5 دقیقه
-                  </p>
+
                 </div>
               </div>
             </Link>
@@ -224,9 +217,7 @@ export default async function Home() {
                       <h2 className="azarMehr text-2xl text-white mb-4">
                         {stickyPost.title.rendered}
                       </h2>
-                      <p className="flex items-center gap-2 text-white">
-                        <Clock /> زمان مطالعه: 5 دقیقه
-                      </p>
+
                     </div>
                     <OpenLinkOutline />
                   </div>

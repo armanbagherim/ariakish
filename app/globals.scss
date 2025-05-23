@@ -415,6 +415,8 @@ legend.gfield_label.gform-field-label {
     padding: 20px;
     border-radius: 10px;
     background-color: #fef2f2;
+    list-style: disc;
+    padding-right: 30px;
     li {
       color: #991b1b;
       margin-bottom: 10px;
@@ -424,4 +426,9 @@ legend.gfield_label.gform-field-label {
 
 .wm-container {
     display: none;
+}
+
+
+.iransansImportant * {
+  font-family: "IRANSansX" !important;
 }

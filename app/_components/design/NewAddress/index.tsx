@@ -3,11 +3,16 @@ import React from "react";
 import AdditionalData from "./AdditionalData";
 import Map from "./Map";
 
-function NewAddress({ formik }) {
+function NewAddress({ formik, fetchAddress, shouldShowAddress, tempCity, proviences }) {
+
   return (
     <>
-      <Map isAdmin data={formik} />
-      <AdditionalData data={formik} />
+      add button to set map
+      <Map isAdmin data={formik} fetchAddress={fetchAddress} />
+
+
+      {shouldShowAddress && <AdditionalData proviences={proviences} tempCity={tempCity} data={formik} />}
+
     </>
   );
 }

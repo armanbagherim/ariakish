@@ -4,7 +4,7 @@ import Header from "./_components/design/Header";
 import Footer from "./_components/design/Footer";
 import { ToastContainer } from "react-toastify";
 import NextTopLoader from "nextjs-toploader";
-
+import { Toaster } from 'react-hot-toast'
 export const metadata: Metadata = {
   title: "آریا کیش | گارانتی و خدمات پس از فروش لوازم خانگی",
   description: "گارانتی و خدمات پس از فروش آریا کیش",
@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en" dir="rtl">
       <body className={`antialiased`}>
         <NextTopLoader />
-        <ToastContainer />
+        <Toaster position="top-center" />
         <Header />
         {children}
         <Footer />

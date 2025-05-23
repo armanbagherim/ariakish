@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useRef, useEffect } from "react";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { Box, Typography, LinearProgress, IconButton } from "@mui/material";
 import Image from "next/image";
 import axios from "axios";
@@ -129,8 +129,7 @@ const Uploader = ({
 
     try {
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/${location}${
-          id ? `/${id}` : ""
+        `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/${location}${id ? `/${id}` : ""
         }`,
         formData,
         {
@@ -167,10 +166,10 @@ const Uploader = ({
           message: error.message,
           response: error.response
             ? {
-                status: error.response.status,
-                statusText: error.response.statusText,
-                data: error.response.data,
-              }
+              status: error.response.status,
+              statusText: error.response.statusText,
+              data: error.response.data,
+            }
             : "No response received",
         });
         throw error;
