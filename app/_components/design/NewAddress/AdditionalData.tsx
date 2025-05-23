@@ -4,56 +4,8 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { fetcher } from "../fetcher";
 import SearchSelect from "../SearchSelect";
 
-function AdditionalData({ data }) {
-  const [provinces, setProvinces] = useState(null);
-  const [cities, setCities] = useState(null);
-  const [neighborhoods, setNeighborhoods] = useState(null);
-
-  // Fetch provinces once
-  useEffect(() => {
-    const fetchProvinces = async () => {
-      const res = await fetcher({
-        url: `/v1/api/guarantee/client/provinces`,
-        method: "GET",
-      });
-      setProvinces(res.result);
-    };
-    fetchProvinces();
-  }, []);
-
-  // Fetch cities when provinceId changes
-  useEffect(() => {
-    const provinceId = data.values.address?.provinceId;
-    if (provinceId) {
-      const fetchCities = async () => {
-        const res = await fetcher({
-          url: `/v1/api/guarantee/client/cities?provinceId=${provinceId}`,
-          method: "GET",
-        });
-        setCities(res.result);
-      };
-      fetchCities();
-    } else {
-      setCities(null);
-    }
-  }, [data.values.address?.provinceId]);
-
-  // Fetch neighborhoods when cityId changes
-  useEffect(() => {
-    const cityId = data.values.address?.cityId;
-    if (cityId) {
-      const fetchNeighborhoods = async () => {
-        const res = await fetcher({
-          url: `/v1/api/guarantee/client/neighborhoods?cityId=${cityId}`,
-          method: "GET",
-        });
-        setNeighborhoods(res.result);
-      };
-      fetchNeighborhoods();
-    } else {
-      setNeighborhoods(null);
-    }
-  }, [data.values.address?.cityId]);
+function AdditionalData({ data, tempCity, proviences }) {
+  console.log('the changed data', data.values)
 
   // Memoize handleSelectChange to prevent recreation
   const handleSelectChange = useCallback(
@@ -79,40 +31,19 @@ function AdditionalData({ data }) {
   return (
     <div className="grid md:grid-cols-2 grid-cols-1 lg:grid-cols-3 gap-4 request">
       {/* Province Select */}
-      {provinces && (
+      {proviences && (
         <SearchSelect
-          nullable
+          disabled={true}
           onChange={(e) => handleSelectChange("provinceId", e)}
-          data={provinces}
-          value={data.values.address?.provinceId}
-          defaultValue={data.values.address?.provinceId}
+          data={proviences}
+          defaultValue={data.values.address.provinceId}
+          value={data.values.address.provinceId}
           label="استان"
         />
       )}
 
       {/* City Select */}
-      {cities && (
-        <SearchSelect
-          nullable
-          onChange={(e) => handleSelectChange("cityId", e)}
-          data={cities}
-          value={data.values.address?.cityId}
-          defaultValue={data.values.address?.cityId}
-          label="شهر"
-        />
-      )}
-
-      {/* Neighborhood Select */}
-      {neighborhoods && neighborhoods.length > 0 && (
-        <SearchSelect
-          nullable
-          onChange={(e) => handleSelectChange("neighborhoodId", e)}
-          data={neighborhoods}
-          value={data.values.address?.neighborhoodId}
-          defaultValue={data.values.address?.neighborhoodId}
-          label="محله"
-        />
-      )}
+      {/* Add your city select logic here if needed */}
 
       {/* Address Fields */}
       {formFields.map((field) => {
@@ -130,7 +61,7 @@ function AdditionalData({ data }) {
             onBlur={data.handleBlur}
             error={Boolean(
               data.errors.address?.[field.name] &&
-                data.touched.address?.[field.name]
+              data.touched.address?.[field.name]
             )}
             helperText={
               data.touched.address?.[field.name] &&

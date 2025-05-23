@@ -1,4 +1,4 @@
-"use client";
+
 import React from "react";
 import Module from "./Module";
 
@@ -7,10 +7,19 @@ import Module from "./Module";
 //   description: "گارانتی و خدمات پس از فروش آریا کیش",
 // };
 
-export default function PreRegisterOrganization() {
+const getData = async () => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/client/provinces`,
+
+  );
+  return res.json();
+}
+
+export default async function PreRegisterOrganization() {
+  const { result: proviences } = await getData();
   return (
     <div>
-      <Module />
+      <Module proviences={proviences} />
     </div>
   );
 }

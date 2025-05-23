@@ -43,7 +43,7 @@ const Header = () => {
             target="_blank"
             className="px-3 py-3 border text-xs rounded-2xl border-primary text-primary"
           >
-            ثبت کارت گارانتی
+            ثبت سفارش تعمیرات
           </Link>
         </div>
       </div>
@@ -62,9 +62,8 @@ const Header = () => {
           />
         </div>
         <ul
-          className={`flex absolute left-0 bg-white z-50 border-b py-4 px-4 right-0 top-16 flex-col gap-4 text-base font-medium ${
-            isOpen ? "block" : "hidden"
-          }`}
+          className={`flex absolute left-0 bg-white z-50 border-b py-4 px-4 right-0 top-16 flex-col gap-4 text-base font-medium ${isOpen ? "block" : "hidden"
+            }`}
         >
           <li className="text-sm" onClick={() => setIsOpen(false)}>
             <Link href="/">خانه</Link>

@@ -86,7 +86,6 @@ const SingleBlogModule = ({ posts }) => {
             <h1 className="text-md md:text-[28px] font-bold text-gray-800">
               {post.title.rendered}
             </h1>
-            <span className="text-sm text-gray-500">زمان مطالعه: 0 دقیقه</span>
           </div>
           <img
             src={post._embedded["wp:featuredmedia"][0].source_url}
@@ -100,11 +99,7 @@ const SingleBlogModule = ({ posts }) => {
         <div className="wrapper-content prose prose-neutral max-w-none prose-a:text-primary">
           <div className="flex justify-between items-center mb-8">
             <div className="flex gap-2 font-bold text-blue-600">
-              {post._embedded["wp:term"][0].map((value, key) => (
-                <span className="category" key={key}>
-                  {value.name}
-                </span>
-              ))}
+
             </div>
             <button
               onClick={handleCopyLink}

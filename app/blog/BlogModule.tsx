@@ -30,19 +30,11 @@ const BlogModule = ({ posts }) => {
                 />
               )}
               <div>
-                <Link
-                  className="text-[#298C89] bg-[#EAF4F4] rounded-xl p-2 mb-4 inline-block"
-                  href={post?._embedded["wp:term"][0][0].slug}
-                >
-                  {post?._embedded["wp:term"][0][0].name}
-                </Link>
+
                 <h4 className="azarMehr text-base mb-4">
                   {post?.title?.rendered}
                 </h4>
-                <div className="flex items-center gap-2 ">
-                  <Clock color={"black"} />{" "}
-                  <ReadingTime content={post?.content?.rendered} />
-                </div>
+
               </div>
             </div>
           </Link>

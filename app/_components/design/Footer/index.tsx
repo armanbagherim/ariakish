@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { Instagram, Telegram, Twitter, Whatsapp } from "../icons";
 import Script from "next/script";
 
@@ -24,26 +24,28 @@ const Footer = () => {
       setIsLoading(true);
       try {
         const result = await fetch(
-          `${process.env.NEXT_PUBLIC_BLOG_BASE_URL}/wp-json/gf/v2/forms/8/submissions`,
+          `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/subscriptions`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `${process.env.API_KEY_FORMS}`,
             },
             body: JSON.stringify({
-              input_1: values.email,
+              phoneNumber: values.email,
             }),
           }
         );
 
         if (result.ok) {
           toast.success("عضویت شما با موفقیت انجام شد!");
+          formik.resetForm(); // Reset form after successful submission
         } else {
-          throw new Error("خطا در عضویت");
+          const errorData = await result.json();
+          toast.error(errorData.message || "خطا در ثبت عضویت");
         }
-      } catch {
-        toast.error("خطا در ارسال اطلاعات");
+      } catch (error) {
+        console.error("Submission Error:", error);
+        toast.error(error.message || "خطا در ثبت عضویت");
       } finally {
         setIsLoading(false);
       }

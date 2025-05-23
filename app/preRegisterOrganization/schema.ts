@@ -38,10 +38,7 @@ export const validationSchema = Yup.object().shape({
         provinceId: Yup.number()
             .min(1, "استان باید انتخاب شود")
             .required("استان الزامی است"),
-        cityId: Yup.number()
-            .min(1, "شهر باید انتخاب شود")
-            .required("شهر الزامی است"),
-
+        
         street: Yup.string().required("خیابان الزامی است"),
         alley: Yup.string().required("کوچه الزامی است"),
         plaque: Yup.string().required("پلاک الزامی است"),
