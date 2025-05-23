@@ -7,12 +7,8 @@ function NewAddress({ formik, fetchAddress, shouldShowAddress, tempCity, provien
 
   return (
     <>
-      add button to set map
       <Map isAdmin data={formik} fetchAddress={fetchAddress} />
-
-
       {shouldShowAddress && <AdditionalData proviences={proviences} tempCity={tempCity} data={formik} />}
-
     </>
   );
 }
