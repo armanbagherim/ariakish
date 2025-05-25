@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 const Page = () => {
@@ -119,15 +120,17 @@ const Page = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredReps.length > 0 ? (
               filteredReps.map((rep) => (
-                <div
+                <Link
+                  href={`/representatives/${rep.id}`}
                   key={rep.id}
                   className="bg-white p-6 shadow-sm rounded-[30px] border border-gray-200 hover:shadow-md transition"
                 >
                   <h3 className="text-xl font-semibold text-gray-800">{rep.name}</h3>
+                  <p className="text-gray-600">مدیریت: {rep.fullName}</p>
                   <p className="text-gray-600">استان: {rep.provinceName}</p>
                   <p className="text-gray-600">شهرستان: {rep.cityName}</p>
                   <p className="text-gray-600">کد نمایندگی: {rep.code || "نامشخص"}</p>
-                </div>
+                </Link>
               ))
             ) : (
               <div className="col-span-4 text-center text-gray-500 p-4">

@@ -137,7 +137,7 @@ export default async function Home() {
         <div className="col-span-3">
           <h4 className="text-[26px] font-black mb-4">کارت VIP آریا کیش</h4>
           <p className="text-[14px] mb-4">
-            از طریق گارانتی VIP می توانید به مقدار اعتبار اختصاص داده شده به هر
+            از طریق کارت VIP می توانید به مقدار اعتبار اختصاص داده شده به هر
             کارت، از خدمات گارانتی استفاده کنید.
           </p>
           <div className="flex gap-4 mb-6">
