@@ -18,12 +18,15 @@ const Header = () => {
             width={0}
             height={0}
           />
-          <ul className="hidden gap-4 text-base font-medium lg:flex">
+          <ul className="hidden gap-4 text-sm font-medium lg:flex">
             <li>
               <Link href="/">خانه</Link>
             </li>
             <li>
-              <Link href="co-vision">چشم انداز شرکت</Link>
+              <Link href="/co-vision">چشم انداز شرکت</Link>
+            </li>
+            <li>
+              <Link href="/about">درباره ما</Link>
             </li>
             <li>
               <Link href="/mission-statement">بیانیه ماموریت</Link>
@@ -67,6 +70,9 @@ const Header = () => {
         >
           <li className="text-sm" onClick={() => setIsOpen(false)}>
             <Link href="/">خانه</Link>
+          </li>
+          <li className="text-sm" onClick={() => setIsOpen(false)}>
+            <Link href="/about">دذباره ما</Link>
           </li>
           <li className="text-sm" onClick={() => setIsOpen(false)}>
             <Link href="/co-vision">چشم انداز شرکت</Link>
