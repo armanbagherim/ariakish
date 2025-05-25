@@ -30,14 +30,36 @@ const getVipCards = async () => {
   return cards;
 };
 
+const getPublicReports = async () => {
+  const data = await fetch(
+    `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/publicReports`,
+    {
+      method: "GET",
+    }
+  );
+  const publicReports = await data.json();
+  return publicReports;
+};
+
 export default async function Home() {
   const blogData = await getBlog();
   const { result: vipCards } = await getVipCards();
+  const { result: publicReports } = await getPublicReports();
   const stickyPost = blogData.find((post) => post.sticky);
   const nonStickyPosts = blogData.filter((post) => !post.sticky);
   const firstColumnPosts = nonStickyPosts.slice(0, 2);
   const thirdColumnPosts = nonStickyPosts.slice(2, 6);
-
+  function formatNumberCompact(num: number): string {
+    if (num >= 1_000_000_000) {
+      return `+ ${Math.floor(num / 100_000_000) / 10} میلیارد`;
+    } else if (num >= 1_000_000) {
+      return `+ ${Math.floor(num / 100_000) / 10} میلیون`;
+    } else if (num >= 1_000) {
+      return `+ ${Math.floor(num / 100) / 10} هزار`;
+    } else {
+      return num.toString();
+    }
+  }
   return (
     <div className="container mx-auto pt-10 md:pt-28 px-4 md:px-0">
       <div className="grid grid-cols-1 md:grid-cols-2 items-center pb- md:pb-14 md:mb-8">
@@ -115,8 +137,8 @@ export default async function Home() {
         <div className="col-span-3">
           <h4 className="text-[26px] font-black mb-4">کارت VIP آریا کیش</h4>
           <p className="text-[14px] mb-4">
-            از طریق گارانتی VIP می توانید به مقدار اعتبار اختصاص داده شده
-            به هر کارت، از خدمات گارانتی استفاده کنید.
+            از طریق گارانتی VIP می توانید به مقدار اعتبار اختصاص داده شده به هر
+            کارت، از خدمات گارانتی استفاده کنید.
           </p>
           <div className="flex gap-4 mb-6">
             <div className="relative">
@@ -136,28 +158,28 @@ export default async function Home() {
       </div>
       <div className="grid  grid-cols-6 md:grid-cols-6 lg:grid-cols-12  gap-4 mb-16">
         <div className="col-span-3 text-center">
-          <div className="azarMehr text-[44px] md:text-[64px] text-primary">
-            165
+          <div className="azarMehr text-[24px] md:text-[40px] text-primary">
+            {publicReports?.activeOrganizationCount}
           </div>
           <div>نمایندگی فعال</div>
         </div>
         <div className="col-span-3 text-center">
-          <div className="azarMehr text-[44px] md:text-[64px] text-primary">
-            12.000
+          <div className="azarMehr text-[24px] md:text-[40px] text-primary">
+            {publicReports?.userCount}
           </div>
           <div>کاربر فعال</div>
         </div>
         <div className="col-span-3 text-center">
-          <div className="azarMehr text-[44px] md:text-[64px] text-primary">
-            +12.000
+          <div className="azarMehr text-[24px] md:text-[40px] text-primary">
+            {formatNumberCompact(publicReports?.guaranteeCount || 0)}
           </div>
           <div>گارانتی فعال</div>
         </div>
         <div className="col-span-3 text-center">
-          <div className="azarMehr text-[44px] md:text-[64px] text-primary">
-            +5.000
+          <div className="azarMehr text-[24px] md:text-[40px] text-primary">
+            {publicReports?.totalRequestCount}
           </div>
-          <div>فروشگاه طرف قرارداد</div>
+          <div>درخواست تعمیر</div>
         </div>
       </div>
       <h4 className="text-center azarMehr mb-10 text-primary">
@@ -187,11 +209,9 @@ export default async function Home() {
                   />
                 )}
                 <div>
-
                   <h4 className="azarMehr text-base mb-4">
                     {post?.title?.rendered}
                   </h4>
-
                 </div>
               </div>
             </Link>
@@ -217,7 +237,6 @@ export default async function Home() {
                       <h2 className="azarMehr text-2xl text-white mb-4">
                         {stickyPost.title.rendered}
                       </h2>
-
                     </div>
                     <OpenLinkOutline />
                   </div>
