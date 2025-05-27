@@ -186,7 +186,7 @@ const Footer = () => {
                 </li>
                 <li className="flex items-center gap-2 mb-2 md:justify-center">
                   <span className="block w-[8px] h-[8px] bg-primary rounded-full"></span>
-                  <Link target="_blank" href="https://seller.ariakish.com">
+                  <Link target="_blank" href="https://club.ariakish.com">
                     استعلام کارت گارانتی
                   </Link>
                 </li>
