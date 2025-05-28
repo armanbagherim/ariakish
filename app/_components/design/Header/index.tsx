@@ -65,14 +65,15 @@ const Header = () => {
           />
         </div>
         <ul
-          className={`flex absolute left-0 bg-white z-50 border-b py-4 px-4 right-0 top-16 flex-col gap-4 text-base font-medium ${isOpen ? "block" : "hidden"
-            }`}
+          className={`flex absolute left-0 bg-white z-50 border-b py-4 px-4 right-0 top-16 flex-col gap-4 text-base font-medium ${
+            isOpen ? "block" : "hidden"
+          }`}
         >
           <li className="text-sm" onClick={() => setIsOpen(false)}>
             <Link href="/">خانه</Link>
           </li>
           <li className="text-sm" onClick={() => setIsOpen(false)}>
-            <Link href="/about">دذباره ما</Link>
+            <Link href="/about">درباره ما</Link>
           </li>
           <li className="text-sm" onClick={() => setIsOpen(false)}>
             <Link href="/co-vision">چشم انداز شرکت</Link>
