@@ -13,7 +13,10 @@ import Timer from "./_components/design/Timer";
 
 const getBlog = async () => {
   const data = await fetch(
-    `${process.env.NEXT_PUBLIC_BLOG_BASE_URL}/wp-json/wp/v2/posts?_embed`
+    `${process.env.NEXT_PUBLIC_BLOG_BASE_URL}/wp-json/wp/v2/posts?_embed`,
+    {
+      cache: "no-store",
+    }
   );
   const posts = await data.json();
   return posts;
@@ -23,6 +26,7 @@ const getVipCards = async () => {
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/vipBundleTypes`,
     {
+      cache: "no-store",
       method: "GET",
     }
   );
@@ -34,6 +38,7 @@ const getPublicReports = async () => {
   const data = await fetch(
     `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/publicReports`,
     {
+      cache: "no-store",
       method: "GET",
     }
   );
@@ -49,6 +54,7 @@ export default async function Home() {
   const nonStickyPosts = blogData.filter((post) => !post.sticky);
   const firstColumnPosts = nonStickyPosts.slice(0, 2);
   const thirdColumnPosts = nonStickyPosts.slice(2, 6);
+
   function formatNumberCompact(num: number): string {
     if (num >= 1_000_000_000) {
       return `+ ${Math.floor(num / 100_000_000) / 10} میلیارد`;
