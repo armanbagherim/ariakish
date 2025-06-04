@@ -30,8 +30,8 @@ const Page = () => {
     setIsLoading(true);
     try {
       const url = provinceId
-        ? `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/organizations?provinceId=${provinceId}`
-        : `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/organizations`;
+        ? `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/organizations?provinceId=${provinceId}&limit=100`
+        : `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/organizations?limit=100`;
       const res = await fetch(url);
       const data = await res.json();
       setRepresentatives(data.result || []);
