@@ -2,7 +2,9 @@ import Link from "next/link";
 
 const getData = async () => {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/faqs`
+    `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/faqs`, {
+    cache: "no-store",
+  }
   );
   if (!res.ok) {
     throw new Error("Failed to fetch FAQ data");
