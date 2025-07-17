@@ -15,30 +15,37 @@ export default function Page() {
             </p>
             <ul className="mt-12 space-y-4 mb-8">
               <li className="flex items-center">
-                <a href="" className="text-customGray font-bold text-md ml-4">
+                <p className="text-customGray font-bold text-md ml-4">
                   info@ariakish.com
-                </a>
+                </p>
               </li>
               <li className="flex items-center">
-                <a
-                  href=""
-                  className="ltr flex gap-2 text-customGray font-bold text-md ml-4"
-                >
+                <p className="ltr flex gap-2 text-customGray font-bold text-md ml-4">
                   <span>021-86780</span>
                   <span>و</span>
                   <span>021-1882</span>
-                </a>
+                </p>
               </li>
               <li className="flex items-center">
-                <a href="" className="text-customGray font-bold text-md ml-4">
+                <p className="text-customGray font-bold text-md ml-4">
                   آدرس دفتر مرکزی: تهران - میدان ولیعصر- بلوار کشاورز - خیابان
                   کبکانیان - پلاک 14
-                </a>
+                </p>
+              </li>
+              <li>
+                <p className="text-customGray font-bold text-md ml-4">
+                  کد پستی 1415995673
+                </p>
+              </li>
+              <li>
+                <p className="text-customGray font-bold text-md ml-4">
+                  ساعت کاری شنبه تا چهارشنبه 9 الی 17 و پنجشنبه ها 9 الی 13
+                </p>  
               </li>
               <li className="flex items-center">
-                <a href="" className="text-customGray font-bold text-md ml-4">
+                <p className="text-customGray font-bold text-md ml-4">
                   سامانه پیامک: 100086780
-                </a>
+                </p>
               </li>
             </ul>
 
