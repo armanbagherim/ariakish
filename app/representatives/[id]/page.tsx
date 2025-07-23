@@ -1,9 +1,27 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { FaStar, FaRegStar, FaStarHalfAlt } from "react-icons/fa";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
-const getStars = (averageScore) => {
-  // Ensure averageScore is a valid number; default to 0 if invalid
+// Define types for the organization data
+interface OrganizationData {
+  organization: {
+    user?: { firstname?: string; lastname?: string };
+    organization?: { name?: string };
+    code?: string;
+    licenseDate?: string;
+    address?: { latitude?: string; longitude?: string; province?: { name?: string } };
+  };
+  totalRequestCount?: number;
+  finishedRequestCount?: number;
+  averageScore?: number;
+}
+
+// Function to calculate star ratings
+const getStars = (averageScore: number | undefined) => {
   const score =
     typeof averageScore === "number" && !isNaN(averageScore)
       ? (averageScore / 100) * 5
@@ -18,80 +36,122 @@ const getStars = (averageScore) => {
   };
 };
 
-const getData = async (id) => {
-  try {
-    if (!id) {
-      throw new Error("ID is missing");
+export default function OrganizationPage({ params }: { params: { id: string } }) {
+  const [data, setData] = useState<OrganizationData | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!params.id) {
+      setError("شناسه نماینده معتبر نیست.");
+      setLoading(false);
+      return;
     }
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/organizations/${id}`
-    );
-    if (!res.ok) {
-      throw new Error(`API request failed with status ${res.status}`);
-    }
-    const result = await res.json();
-    return result || {};
-  } catch (error) {
-    console.error("Error fetching organization data:", error);
-    return { organization: null }; // Return null organization on error
-  }
-};
 
-export default async function OrganizationPage({ params }) {
-  const { id } = (await params) || {};
-  if (!id) {
-    return (
-      <div className="max-w-5xl md:mt-14 mt-4 mx-auto p-8 bg-white shadow-xl rounded-2xl text-right space-y-6">
-        <h1 className="text-3xl font-bold text-red-800">خطا</h1>
-        <p className="text-red-600">شناسه سازمان معتبر نیست.</p>
-        <Link
-          href="/representatives"
-          className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition"
-        >
-          بازگشت
-        </Link>
-      </div>
-    );
-  }
+    const fetchData = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/anonymous/organizations/${params.id}`
+        );
+        if (!res.ok) {
+          throw new Error(`API request failed with status ${res.status}`);
+        }
+        const result = await res.json();
+        setData(result.result || {});
+      } catch (error) {
+        console.error("Error fetching organization data:", error);
+        setError("داده‌های نماینده یافت نشد.");
+        setData({ organization: {} });
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const { result: data } = await getData(id);
-  const organization = data.organization; // Access the nested organization object
-  const totalRequestCount = data.totalRequestCount;
-  const finishedRequestCount = data.finishedRequestCount;
-  const averageScore = data.averageScore;
+    fetchData();
+  }, [params.id]);
 
-  if (!organization) {
-    return (
-      <div className="max-w-5xl md:mt-14 mt-4 mx-auto p-8 bg-white shadow-xl rounded-2xl text-right space-y-6">
-        <h1 className="text-3xl font-bold text-red-800">خطا</h1>
-        <p className="text-red-600">داده‌های سازمان یافت نشد.</p>
-        <Link
-          href="/representatives"
-          className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition"
-        >
-          بازگشت
-        </Link>
-      </div>
-    );
-  }
-
-  const stars = getStars(averageScore);
-
-  // Extract lat and lng; use fallback for Tehran if missing
-  const { lat, lng } = organization.address || {};
+  const lat = parseFloat(data?.organization?.address?.latitude);
+  const lng = parseFloat(data?.organization?.address?.longitude);
   const isValidLatLng =
     typeof lat === "number" &&
     typeof lng === "number" &&
+    !isNaN(lat) &&
+    !isNaN(lng) &&
     lat >= -90 &&
     lat <= 90 &&
     lng >= -180 &&
     lng <= 180;
 
-  // Fallback coordinates for Tehran if lat/lng are missing
-  const fallbackLat = 35.6892; // Approximate latitude for Tehran
-  const fallbackLng = 51.389; // Approximate longitude for Tehran
+  const fallbackLat = 35.6892;
+  const fallbackLng = 51.389;
   const displayLat = isValidLatLng ? lat : fallbackLat;
   const displayLng = isValidLatLng ? lng : fallbackLng;
+
+  useEffect(() => {
+    if (mapContainerRef.current && !mapRef.current && !loading && !error && data?.organization) {
+      // Initialize Leaflet map
+      mapRef.current = L.map(mapContainerRef.current, {
+        center: [displayLat, displayLng],
+        zoom: 15,
+        scrollWheelZoom: false,
+      });
+
+      // Add OpenStreetMap tiles
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(mapRef.current);
+
+      // Define custom marker icon
+      const customIcon = L.icon({
+        iconUrl: "/assets/map/img_pin.png",
+        iconSize: [90, 90], // Adjust size as needed
+        iconAnchor: [16, 32], // Anchor at the bottom center
+        popupAnchor: [0, -32], // Popup anchor (if needed)
+      });
+
+      // Add marker with custom icon
+      L.marker([displayLat, displayLng], { icon: customIcon }).addTo(mapRef.current);
+
+      // Cleanup on unmount
+      return () => {
+        if (mapRef.current) {
+          mapRef.current.remove();
+          mapRef.current = null;
+        }
+      };
+    }
+  }, [displayLat, displayLng, loading, error, data]);
+
+  if (loading) {
+    return (
+      <div className="max-w-5xl md:mt-14 mt-4 mx-auto p-8 bg-white shadow-xl rounded-2xl flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-lg text-blue-800 font-semibold">در حال بارگذاری...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !params.id || !data?.organization) {
+    return (
+      <div className="max-w-5xl md:mt-14 mt-4 mx-auto p-8 bg-white shadow-xl rounded-2xl text-right space-y-6">
+        <h1 className="text-3xl font-bold text-red-800">خطا</h1>
+        <p className="text-red-600">{error || "داده‌های نماینده یافت نشد."}</p>
+        <Link
+          href="/representatives"
+          className="text-sm bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl transition"
+        >
+          بازگشت
+        </Link>
+      </div>
+    );
+  }
+
+  const { organization, totalRequestCount, finishedRequestCount, averageScore } = data;
+  const stars = getStars(averageScore);
 
   return (
     <div className="max-w-5xl md:mt-14 mt-4 mx-auto p-8 bg-white shadow-xl rounded-2xl text-right space-y-6">
@@ -133,7 +193,7 @@ export default async function OrganizationPage({ params }) {
           <p>
             <strong>تاریخ مجوز:</strong>{" "}
             {organization.licenseDate &&
-            !isNaN(new Date(organization.licenseDate).getTime())
+              !isNaN(new Date(organization.licenseDate).getTime())
               ? new Date(organization.licenseDate).toLocaleDateString("fa-IR")
               : "ناموجود"}
           </p>
@@ -148,27 +208,14 @@ export default async function OrganizationPage({ params }) {
             <strong>استان:</strong>{" "}
             {organization.address?.province?.name || "ناموجود"}
           </p>
-          <p>
-            <strong>طول جغرافیایی:</strong>{" "}
-            {isValidLatLng ? lat : "ناموجود (پیش‌فرض: تهران)"}
+          <div
+            ref={mapContainerRef}
+            style={{ width: "100%", height: "300px", borderRadius: "8px" }}
+          ></div>
+
+          <p className="text-xs text-gray-500">
+            © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors
           </p>
-          <p>
-            <strong>عرض جغرافیایی:</strong>{" "}
-            {isValidLatLng ? lng : "ناموجود (پیش‌فرض: تهران)"}
-          </p>
-          {/* Google Maps iframe */}
-          {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
-            <iframe
-              width="100%"
-              height="300"
-              style={{ border: 0 }}
-              loading="lazy"
-              allowFullScreen
-              src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&q=${displayLat},${displayLng}&zoom=15`}
-            ></iframe>
-          ) : (
-            <p className="text-red-600">کلید API نقشه موجود نیست.</p>
-          )}
           {!isValidLatLng && (
             <p className="text-yellow-600">
               نقشه با مختصات پیش‌فرض تهران نمایش داده شده است.
