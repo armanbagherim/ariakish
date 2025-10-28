@@ -46,7 +46,7 @@ const Header = () => {
             target="_blank"
             className="px-3 py-3 border text-xs rounded-2xl border-primary text-primary"
           >
-            ثبت سفارش تعمیرات
+           ورود / ثبت نام
           </Link>
         </div>
       </div>
@@ -92,7 +92,7 @@ const Header = () => {
           </li>
           <li className="text-sm" onClick={() => setIsOpen(false)}>
             <Link target="_blank" href="https://club.ariakish.com/login">
-              ثبت کارت گارانتی
+              ورود / ثبت نام
             </Link>
           </li>
         </ul>
