@@ -1,16 +1,46 @@
 "use client";
-import { TextField } from "@mui/material";
+import { TextField, CircularProgress, FormHelperText } from "@mui/material";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { fetcher } from "../fetcher";
 import SearchSelect from "../SearchSelect";
 
-function AdditionalData({ data, tempCity, proviences }) {
+interface AdditionalDataProps {
+  data: {
+    values: {
+      address: {
+        [key: string]: any;
+      };
+    };
+    setFieldValue: (field: string, value: any) => void;
+    handleChange: (e: React.ChangeEvent<any>) => void;
+    handleBlur: (e: React.FocusEvent<any>) => void;
+    errors: {
+      address?: {
+        [key: string]: string;
+      };
+    };
+    touched: {
+      address?: {
+        [key: string]: boolean;
+      };
+    };
+  };
+  tempCity: any;
+  proviences: Array<{ id: number; name: string; slug: string }>;
+  cities?: Array<{ id: number; name: string; provinceId: number }>;
+  loadingCities?: boolean;
+}
+
+function AdditionalData({ data, tempCity, proviences, cities = [], loadingCities = false }: AdditionalDataProps) {
   console.log('the changed data', data.values)
 
   // Memoize handleSelectChange to prevent recreation
   const handleSelectChange = useCallback(
-    (field, value) => {
+    (field: string, value: any) => {
       data.setFieldValue(`address.${field}`, value?.id || null);
+      // Reset city when province changes
+      if (field === 'provinceId') {
+        data.setFieldValue('address.cityId', null);
+      }
     },
     [data]
   );
@@ -43,7 +73,17 @@ function AdditionalData({ data, tempCity, proviences }) {
       )}
 
       {/* City Select */}
-      {/* Add your city select logic here if needed */}
+      <SearchSelect
+        disabled={!data.values.address.provinceId || loadingCities}
+        onChange={(e: any) => handleSelectChange("cityId", e)}
+        data={cities}
+        defaultValue={data.values.address.cityId}
+        value={data.values.address.cityId}
+        label={loadingCities ? 'در حال دریافت شهرها...' : 'شهر'}
+      />
+      {data.touched.address?.cityId && data.errors.address?.cityId && (
+        <FormHelperText error>{data.errors.address.cityId}</FormHelperText>
+      )}
 
       {/* Address Fields */}
       {formFields.map((field) => {
@@ -73,5 +113,8 @@ function AdditionalData({ data, tempCity, proviences }) {
     </div>
   );
 }
+
+// Add display name for debugging
+AdditionalData.displayName = 'AdditionalData';
 
 export default React.memo(AdditionalData);

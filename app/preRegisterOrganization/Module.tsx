@@ -39,6 +39,41 @@ function Module({ proviences }) {
   const [trackingId, setTrackingId] = useState(null);
   const [shouldShowAddress, setShouldShowAddress] = useState(false);
   const [tempCity, setTempCity] = useState(null);
+  const [cities, setCities] = useState<Array<{id: number, name: string}>>([]);
+  const [loadingCities, setLoadingCities] = useState(false);
+
+  // Function to fetch cities by province ID
+  const fetchCitiesByProvinceId = async (provinceId: number) => {
+    if (!provinceId) {
+      setCities([]);
+      return;
+    }
+
+    try {
+      setLoadingCities(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_CLUB_BASE_URL}/v1/api/guarantee/client/cities?provinceId=${provinceId}`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch cities');
+      }
+      
+      const result = await response.json();
+      setCities(result.result || []);
+    } catch (error) {
+      console.error('Error fetching cities:', error);
+      setCities([]);
+    } finally {
+      setLoadingCities(false);
+    }
+  };
   const formik = useFormik({
     initialValues: {
       title: "",
@@ -53,6 +88,7 @@ function Module({ proviences }) {
         latitude: "35.65326",
         longitude: "51.35471",
         provinceId: 0,
+        cityId: 0,
         street: "",
         alley: "",
         plaque: "",
@@ -172,6 +208,15 @@ function Module({ proviences }) {
     },
   });
 
+  // Handle province change
+  const handleProvinceChange = React.useCallback(async (value: any) => {
+    if (value?.id) {
+      formik.setFieldValue("address.provinceId", value.id);
+      formik.setFieldValue("address.cityId", 0); // Reset city when province changes
+      await fetchCitiesByProvinceId(value.id);
+    }
+  }, [formik]);
+
   // Memoize the onChange handler for DatePicker to prevent re-renders
   const handleDateChange = React.useCallback(
     (value) => {
@@ -218,10 +263,14 @@ function Module({ proviences }) {
 
         // Set provinceId in Formik if a match is found
         if (matchedProvince) {
-          console.log("Matched Province:", matchedProvince); // Logs { id: 11, name: "خراسان رضوي", slug: "KHR" }
+          console.log("Matched Province:", matchedProvince);
           formik.setFieldValue("address.provinceId", matchedProvince.id);
+          // Fetch cities for the matched province
+          await fetchCitiesByProvinceId(matchedProvince.id);
         } else {
           console.warn(`No province found for ${normalizedState}`);
+          setCities([]);
+          formik.setFieldValue("address.provinceId", 0);
         }
 
         // Set other address fields
@@ -428,7 +477,16 @@ function Module({ proviences }) {
                 </section>
                 <section>
                   <h2 className="text-xl font-bold mb-4">اطلاعات آدرس</h2>
-                  <NewAddress proviences={proviences} tempCity={tempCity} shouldShowAddress={shouldShowAddress} fetchAddress={fetchAddress} formik={formik} />
+                  <NewAddress 
+                    proviences={proviences} 
+                    tempCity={tempCity} 
+                    shouldShowAddress={shouldShowAddress} 
+                    fetchAddress={fetchAddress} 
+                    formik={formik} 
+                    cities={cities}
+                    loadingCities={loadingCities}
+                    onProvinceChange={handleProvinceChange}
+                  />
                 </section>
                 <section className="text-left mt-6">
                   <Button
