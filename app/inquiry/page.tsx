@@ -1,10 +1,10 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { ConvertToNull } from "../_components/Utils/ConvertToNull";
 import { fetcher } from "../_components/design/fetcher";
 import { useSearchParams } from "next/navigation";
 
-export default function Page() {
+function InquiryContent() {
   const [cardNumber, setCardNumber] = useState("");
   const [guarantee, setGuarantee] = useState(null);
   const [error, setError] = useState("");
@@ -222,5 +222,20 @@ export default function Page() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-4"></div>
+          <p className="text-gray-600">در حال بارگذاری...</p>
+        </div>
+      </div>
+    }>
+      <InquiryContent />
+    </Suspense>
   );
 }
