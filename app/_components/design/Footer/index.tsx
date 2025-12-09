@@ -181,7 +181,7 @@ const Footer = () => {
                     target="_blank"
                     href="https://seller.ariakish.com/login"
                   >
-                    پنل فروشندگان
+                    پنل همکاران
                   </Link>
                 </li>
                 <li className="flex items-center gap-2 mb-2 md:justify-center">
