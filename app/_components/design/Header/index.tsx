@@ -10,7 +10,8 @@ const Header = () => {
     <>
       <div className="container mx-auto px-4 lg:px-0 hidden lg:block ">
         <div className="flex items-center justify-between">
-          <Image
+          <Link href="/">
+            <Image
             className="p-4 w-[200px] h-auto"
             alt="لوگو آریا کیش"
             src={"/logo.png"}
@@ -18,6 +19,7 @@ const Header = () => {
             width={0}
             height={0}
           />
+          </Link>
           <ul className="hidden gap-4 text-sm font-medium lg:flex">
             <li>
               <Link href="/">خانه</Link>
@@ -55,6 +57,7 @@ const Header = () => {
           <span onClick={() => setIsOpen((prev) => !prev)}>
             <MenuFill />
           </span>
+          <Link href="/">
           <Image
             className="p-4 w-[150px] h-auto"
             alt="لوگو آریا کیش"
@@ -63,6 +66,7 @@ const Header = () => {
             width={0}
             height={0}
           />
+          </Link>
         </div>
         <ul
           className={`flex absolute left-0 bg-white z-50 border-b py-4 px-4 right-0 top-16 flex-col gap-4 text-base font-medium ${

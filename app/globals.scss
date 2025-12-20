@@ -123,23 +123,24 @@ body {
 }
 
 g {}
+
 g:hover rect {
-  
-    fill: #2563eb;
+
+  fill: #2563eb;
 }
 
 path {
   pointer-events: none;
 }
 
-g:hover + path {
+g:hover+path {
   fill: white;
 }
 
 .blogGradiant {
   border-radius: 0 0 60px 60px;
-  background: rgb(37,99,235);
-  background: linear-gradient(180deg, rgba(37,99,235,0) 0%, rgba(37,99,235,1) 110%);
+  background: rgb(37, 99, 235);
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0) 0%, rgba(37, 99, 235, 1) 110%);
 }
 
 /* @media (min-width: 768px) {
@@ -149,31 +150,33 @@ g:hover + path {
 }
  */
 
- .wp-block-columns {
+.wp-block-columns {
   display: flex !important;
   gap: 20px;
- }
+}
 
- .wp-block-columns img{
+.wp-block-columns img {
   width: 100%;
   border-radius: 45px;
- }
+}
 
- .wrapper-content h2, h3, h4{
+.wrapper-content h2,
+h3,
+h4 {
   font-size: 30px;
- }
+}
 
- .wrapper-content p{
+.wrapper-content p {
   line-height: 2;
   margin-bottom: 1em;
   text-align: justify;
- }
+}
 
- h2.gform_title {
-    font-size: 29px;
-    font-weight: bold;  
-    font-family: AzarMehr;
-    margin-bottom: 10px;
+h2.gform_title {
+  font-size: 29px;
+  font-weight: bold;
+  font-family: AzarMehr;
+  margin-bottom: 10px;
 }
 
 .gform_description {
@@ -182,31 +185,35 @@ g:hover + path {
 
 .ginput_container {
   margin-bottom: 1em;
+
   textarea {
     width: 100%;
     padding: 1em;
     border-radius: 15px;
     outline: none;
+
     &:focus {
       border: 1px solid #2563EB;
     }
   }
+
   input {
-      border: 1px solid #b4b4b4;
-      padding: 10px 15px;
-      border-radius: 15px;
-      outline: none;
-      width: 100%;
-      &:focus {
-        border: 1px solid #2563EB;
-      }
+    border: 1px solid #b4b4b4;
+    padding: 10px 15px;
+    border-radius: 15px;
+    outline: none;
+    width: 100%;
+
+    &:focus {
+      border: 1px solid #2563EB;
     }
+  }
 }
 
 .gfield_radio {
-    display: flex;
-    gap: 24px;
-    align-items: center;
+  display: flex;
+  gap: 24px;
+  align-items: center;
 }
 
 .gform-field-label {
@@ -225,51 +232,57 @@ g:hover + path {
 }
 
 .gravityform__button {
-    padding: 15px 25px;
-    background: #2563eb;
-    border-radius: 15px;
-    width: 100%;
-    color: white;
+  padding: 15px 25px;
+  background: #2563eb;
+  border-radius: 15px;
+  width: 100%;
+  color: white;
 }
 
 .gform_fields {
-    display: flex;
-    flex-wrap: wrap; 
-    
-    .gfield--width-half {
-      padding: 0 10px;
-      flex: 1 1 50%;
+  display: flex;
+  flex-wrap: wrap;
 
-    }
-    .gfield--width-third {
-      padding: 0 10px;
+  .gfield--width-half {
+    padding: 0 10px;
+    flex: 1 1 50%;
 
-      flex: 1 1 30%;
-    }
-    .gfield--width-full {
-      padding: 20px 10px;
-      
-      flex: 1 1 100%;
-    }
-    .gfield--width-quarter {
-      padding: 20px 10px;
-      
-      flex: 1 1 25%;
-    }
+  }
+
+  .gfield--width-third {
+    padding: 0 10px;
+
+    flex: 1 1 30%;
+  }
+
+  .gfield--width-full {
+    padding: 20px 10px;
+
+    flex: 1 1 100%;
+  }
+
+  .gfield--width-quarter {
+    padding: 20px 10px;
+
+    flex: 1 1 25%;
+  }
 }
 
-.gravityform  {
+.gravityform {
   background: #eee;
   padding: 30px;
   border-radius: 15px;
   margin-bottom: 1em;
 
   .gform_fields {
-    margin-bottom: 2em;    box-sizing: border-box; /* Ensure padding and border are included in the width */
+    margin-bottom: 2em;
+    box-sizing: border-box;
+    /* Ensure padding and border are included in the width */
   }
 }
 
-html, body {
+html,
+body {
   scroll-behavior: smooth;
 }
 
@@ -277,6 +290,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+
   .gform-field-label {
     white-space: nowrap;
     margin: 0;
@@ -295,13 +309,14 @@ legend.gfield_label.gform-field-label {
 .gfield--type-radio {
   margin-bottom: 1em;
   margin-top: 1em;
+
   .ginput_container {
-background: #ffffff;
-  padding: 20px 24px;
-  border-radius: 26px;
-  
+    background: #ffffff;
+    padding: 20px 24px;
+    border-radius: 26px;
+
   }
-  
+
 }
 
 legend.gfield_label.gform-field-label {
@@ -317,6 +332,7 @@ legend.gfield_label.gform-field-label {
   margin: 1em 0;
   border-bottom: 2px dashed #ababab;
   padding-bottom: 7px;
+
   h3 {
     font-size: 20px;
     font-weight: bold;
@@ -368,20 +384,21 @@ legend.gfield_label.gform-field-label {
   border-radius: 40px;
 }
 
-@media( max-width: 500px) {
+@media(max-width: 500px) {
   .gform_fields {
-      flex-flow: column;
+    flex-flow: column;
   }
 }
 
-@media( max-width: 768px) {
+@media(max-width: 768px) {
 
   .gfield_radio {
     flex-flow: column;
-    gap:4px;
+    gap: 4px;
     align-items: start;
+
     .gform-field-label {
-    font-weight: 400;
+      font-weight: 400;
 
     }
   }
@@ -408,15 +425,18 @@ legend.gfield_label.gform-field-label {
   p {
     margin-bottom: 10px;
   }
+
   hr {
     margin: 15px 0;
   }
+
   ul {
     padding: 20px;
     border-radius: 10px;
     background-color: #fef2f2;
     list-style: disc;
     padding-right: 30px;
+
     li {
       color: #991b1b;
       margin-bottom: 10px;
@@ -425,10 +445,80 @@ legend.gfield_label.gform-field-label {
 }
 
 .wm-container {
-    display: none;
+  display: none;
 }
 
 
 .iransansImportant * {
   font-family: "IRANSansX" !important;
+}
+
+/* Marquee Animation با CSS خالص - جهت معکوس (چپ به راست) */
+.marquee {
+  display: flex;
+  width: 200%;
+  /* دو برابر برای تکرار بی‌نهایت */
+  animation: marquee-scroll 20s linear infinite;
+}
+
+.animate-marquee:hover .marquee {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-scroll {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* برای موبایل سرعت کمی کمتر */
+@media (max-width: 768px) {
+  .marquee {
+    animation-duration: 10s;
+  }
+}
+
+
+/* --- استایل مینیمال --- */
+.swiper-button-prev,
+.swiper-button-next {
+  width: 48px;
+  height: 48px;
+  background-color: transparent;
+  border: 2px solid #333;
+  /* رنگ تیره */
+  border-radius: 50%;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  background-color: #333;
+  /* پر شدن در حالت هاور */
+  color: #fff;
+  /* تغییر رنگ آیکون به سفید */
+}
+
+.swiper-button-prev svg,
+.swiper-button-next svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.swiper-button-prev:hover svg {
+  transform: translateX(-2px);
+}
+
+.swiper-button-next:hover svg {
+  transform: translateX(2px);
 }

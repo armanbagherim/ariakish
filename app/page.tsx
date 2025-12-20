@@ -10,6 +10,7 @@ import {
 import React from "react";
 import PureCarousel from "./_components/design/Carousel/PureCarousel";
 import Timer from "./_components/design/Timer";
+import HeroSlider from "./_components/design/Slider/HeroSlider";
 
 const getBlog = async () => {
   const data = await fetch(
@@ -46,12 +47,112 @@ const getPublicReports = async () => {
   return publicReports;
 };
 
+// آرایه برندها - دقیقاً همان‌های صفحه brands
+const brands = [
+  { src: "/brands/aap-pro.png", name: "aap-pro" },
+  { src: "/brands/AILY-DIGITAL.png", name: "AILY-DIGITAL" },
+  { src: "/brands/aiwa.png", name: "aiwa" },
+  { src: "/brands/alpine.png", name: "alpine" },
+  { src: "/brands/arktek.png", name: "arktek" },
+  { src: "/brands/AUDIOSYSTEM.png", name: "AUDIOSYSTEM" },
+  { src: "/brands/band-and-olufsen.png", name: "band-and-olufsen" },
+  { src: "/brands/BERLIN-BC.png", name: "BERLIN-BC" },
+  { src: "/brands/bitron-1.png", name: "bitron-1" },
+  { src: "/brands/bitron.png", name: "bitron" },
+  { src: "/brands/bkk.png", name: "bkk" },
+  { src: "/brands/britex.png", name: "britex" },
+  { src: "/brands/casio.png", name: "casio" },
+  { src: "/brands/cooler-master.png", name: "cooler-master" },
+  { src: "/brands/corsair.png", name: "corsair" },
+  { src: "/brands/das-audio.png", name: "das-audio" },
+  { src: "/brands/das.png", name: "das" },
+  { src: "/brands/DC-QUART.png", name: "DC-QUART" },
+  { src: "/brands/DD-AUDIO.png", name: "DD-AUDIO" },
+  { src: "/brands/DECA.png", name: "DECA" },
+  { src: "/brands/dell.png", name: "dell" },
+  { src: "/brands/DOCAN.png", name: "DOCAN" },
+  { src: "/brands/DYNAMIC STATE.png", name: "DYNAMIC STATE" },
+  { src: "/brands/earldom.png", name: "earldom" },
+  { src: "/brands/electro-voice.png", name: "electro-voice" },
+  { src: "/brands/energizer.png", name: "energizer" },
+  { src: "/brands/ENTU.png", name: "ENTU" },
+  { src: "/brands/epson.png", name: "epson" },
+  { src: "/brands/evvoli.png", name: "evvoli" },
+  { src: "/brands/faith.png", name: "faith" },
+  { src: "/brands/fanvil.png", name: "fanvil" },
+  { src: "/brands/fedar.png", name: "fedar" },
+  { src: "/brands/fulian.png", name: "fulian" },
+  { src: "/brands/gamdias.png", name: "gamdias" },
+  { src: "/brands/game-max.png", name: "game-max" },
+  { src: "/brands/gplus.png", name: "gplus" },
+  { src: "/brands/green.png", name: "green" },
+  { src: "/brands/harman.png", name: "harman" },
+  { src: "/brands/hatron.png", name: "hatron" },
+  { src: "/brands/hisense.png", name: "hisense" },
+  { src: "/brands/hp.png", name: "hp" },
+  { src: "/brands/HPE.png", name: "HPE" },
+  { src: "/brands/IDHILIDS.png", name: "IDHILIDS" },
+  { src: "/brands/intel.png", name: "intel" },
+  { src: "/brands/jack.png", name: "jack" },
+  { src: "/brands/jasco.png", name: "jasco" },
+  { src: "/brands/jbl.png", name: "jbl" },
+  { src: "/brands/jin.png", name: "jin" },
+  { src: "/brands/juki.png", name: "juki" },
+  { src: "/brands/KAREN-AUDIO.png", name: "KAREN-AUDIO" },
+  { src: "/brands/kashima.png", name: "kashima" },
+  { src: "/brands/king-star.png", name: "king-star" },
+  { src: "/brands/LIBERAL.png", name: "LIBERAL" },
+  { src: "/brands/LION-TWO.png", name: "LION-TWO" },
+  { src: "/brands/mackie.png", name: "mackie" },
+  { src: "/brands/MAGIC-AUDIO.png", name: "MAGIC-AUDIO" },
+  { src: "/brands/MD-LAB.png", name: "MD-LAB" },
+  { src: "/brands/menzo.png", name: "menzo" },
+  { src: "/brands/mikaelson.png", name: "mikaelson" },
+  { src: "/brands/MQ DRAW ME.png", name: "MQ DRAW ME" },
+  { src: "/brands/msi.png", name: "msi" },
+  { src: "/brands/NAKAMICHI.png", name: "NAKAMICHI" },
+  { src: "/brands/NEWLONG.png", name: "NEWLONG" },
+  { src: "/brands/NIKITA.png", name: "NIKITA" },
+  { src: "/brands/NORA-NOVIN-TAK-1.png", name: "NORA-NOVIN-TAK-1" },
+  { src: "/brands/NORA-NOVIN-TAK.png", name: "NORA-NOVIN-TAK" },
+  { src: "/brands/novox.png", name: "novox" },
+  { src: "/brands/NURNBERG.png", name: "NURNBERG" },
+  { src: "/brands/panasonic.png", name: "panasonic" },
+  { src: "/brands/paradise.png", name: "paradise" },
+  { src: "/brands/PHOENIX-GOLD.png", name: "PHOENIX-GOLD" },
+  { src: "/brands/precious.png", name: "precious" },
+  { src: "/brands/QUPA.png", name: "QUPA" },
+  { src: "/brands/rak.png", name: "rak" },
+  { src: "/brands/rcf.png", name: "rcf" },
+  { src: "/brands/ROYAL-SOUND.png", name: "ROYAL-SOUND" },
+  { src: "/brands/sammi.png", name: "sammi" },
+  { src: "/brands/sandisk.png", name: "sandisk" },
+  { src: "/brands/siliconpower.png", name: "siliconpower" },
+  { src: "/brands/silter.png", name: "silter" },
+  { src: "/brands/SILVERSTAR.png", name: "SILVERSTAR" },
+  { src: "/brands/silverstone.png", name: "silverstone" },
+  { src: "/brands/sing-e.png", name: "sing-e" },
+  { src: "/brands/singer.png", name: "singer" },
+  { src: "/brands/SKY-DOLPHIN.png", name: "SKY-DOLPHIN" },
+  { src: "/brands/sp-audio.png", name: "sp-audio" },
+  { src: "/brands/SYSTEM-CERAMICS.png", name: "SYSTEM-CERAMICS" },
+  { src: "/brands/toshiba.png", name: "toshiba" },
+  { src: "/brands/tribit.png", name: "tribit" },
+  { src: "/brands/tsco.png", name: "tsco" },
+  { src: "/brands/vesta.png", name: "vesta" },
+  { src: "/brands/WEIJIE.png", name: "WEIJIE" },
+  { src: "/brands/wilco.png", name: "wilco" },
+  { src: "/brands/WORLDEN.png", name: "WORLDEN" },
+  { src: "/brands/xiaomi.png", name: "xiaomi" },
+  { src: "/brands/YESHI.png", name: "YESHI" },
+];
+
 export default async function Home() {
   const blogData = await getBlog();
   const { result: vipCards } = await getVipCards();
   const { result: publicReports } = await getPublicReports();
-  const stickyPost = blogData.find((post) => post.sticky);
-  const nonStickyPosts = blogData.filter((post) => !post.sticky);
+  const stickyPost = blogData.find((post: any) => post.sticky);
+  const nonStickyPosts = blogData.filter((post: any) => !post.sticky);
   const firstColumnPosts = nonStickyPosts.slice(0, 2);
   const thirdColumnPosts = nonStickyPosts.slice(2, 6);
 
@@ -66,9 +167,14 @@ export default async function Home() {
       return num.toString();
     }
   }
+
   return (
     <div className="container mx-auto pt-10 md:pt-28 px-4 md:px-0">
-      <div className="grid grid-cols-1 md:grid-cols-2 items-center pb- md:pb-14 md:mb-8">
+      <div className="my-12">
+        <HeroSlider />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-1 items-center pb- md:pb-14 md:mb-8">
         <div>
           <h1 className="text-[28px] azarMehr text-primary mb-4 ">
             گارانتی آریا کیش
@@ -88,58 +194,11 @@ export default async function Home() {
             >
               شرایط گارانتی
             </Link>
-            {/* <Link
-              href="#about"
-              className="px-3 py-3 border text-md rounded-2xl border-secondary text-secondary"
-            >
-              درباره ما
-            </Link> */}
           </div>
         </div>
-        <div className="-order-1 md:order-2 md:mb-0 md:p-8 mb-8 md:px-12 px-0">
-          <Image
-            alt="آریاکیش"
-            width={0}
-            height={0}
-            sizes="100vw"
-            className="w-full"
-            src="/kitchen.png"
-          />
-        </div>
-      </div>
-      {/* <div id="about" className="md:px-[10%] block py-12 mb-8 md:mb-20">
-        <div className="text-center drop md:px-[10%] px-8 md:py-[50px] py-6 rounded-[40px] md:rounded-[70px]">
-          <h2 className="md:text-[28px] text-lg azarMehr text-secondary mb-4">
-            درباره ما
-          </h2>
-          <p className="text-sm md:text-xl text-justify">
-            ما در شرکت آریا کیش همواره همراه شما هستیم تا با پشتیبانی و گارانتی
-            معتبر، آرامش و اطمینان را به خانه‌های شما بیاوریم. با تکیه بر تجربه،
-            تعهد و کیفیت، تلاش می‌کنیم تا هر لحظه از اعتماد شما پاسخی شایسته
-            بگیریم. هدف ما، خلق تجربه‌ای بی‌دغدغه از پشتیبانی و خدماتی است که
-            زندگی را آسوده و ساده تر می‌کند. در مسیر این همراهی، همواره به
-            ارزش‌هایی چون صداقت، مشتری‌مداری و کیفیت در اقتصاد خانواده پایبندیم.
-            انتخاب شما، افتخار ماست.
-          </p>
-        </div>
-      </div> */}
-
-      <div className="flex justify-center mb-8 md:mb-20">
-        <div className="hidden md:block px-16">
-          <h3 className="text-center text-primary azarMehr md:text-3xl text-xl mb-12 font-bold ">
-            مراحل ثبت گارانتی
-          </h3>
-          <Flows />
-        </div>
-        <div className="block md:hidden">
-          <h3 className="text-center text-primary azarMehr md:text-3xl text-xl mb-12 font-bold ">
-            مراحل ثبت گارانتی
-          </h3>
-          <FlowMobile />
-        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-12 mb-10 items-center  md:mb-32 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-12 mb-10 items-center md:mb-32 gap-4 mt-14 md:mt-8">
         <div className="col-span-3">
           <h4 className="text-[26px] font-black mb-4">کارت VIP آریا کیش</h4>
           <p className="text-[14px] mb-4">
@@ -162,7 +221,8 @@ export default async function Home() {
           <PureCarousel data={vipCards} />
         </div>
       </div>
-      <div className="grid  grid-cols-6 md:grid-cols-6 lg:grid-cols-12  gap-4 mb-16">
+
+      <div className="grid grid-cols-6 md:grid-cols-6 lg:grid-cols-12 gap-4 mb-16">
         <div className="col-span-3 text-center">
           <div className="azarMehr text-[24px] md:text-[40px] text-primary">
             {publicReports?.activeOrganizationCount}
@@ -188,13 +248,78 @@ export default async function Home() {
           <div>درخواست تعمیر</div>
         </div>
       </div>
+
+      {/* ==================== بخش برندهای تحت گارانتی ==================== */}
+      <div className="mt-10 mb-4">
+        <div className=" mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="text-xl md:text-xl font-bold text-primary azarMehr">
+            برندهای تحت گارانتی
+          </h2>
+          <Link
+            href="/brands"
+            className="text-secondary border border-secondary px-6 py-3 rounded-2xl hover:bg-secondary hover:text-white transition-colors duration-300"
+          >
+            همه برندها
+          </Link>
+        </div>
+      </div>
+
+      {/* Marquee با جهت معکوس + لوگوهای کوچکتر و بیشتر */}
+      <div className="relative overflow-hidden bg-gray-100 py-12 rounded-3xl mb-8">
+        {/* گرادیان محو در دو طرف */}
+        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-100 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-100 to-transparent z-10 pointer-events-none" />
+
+        <div className="animate-marquee">
+          <div className="marquee">
+            {/* اولین کپی از لوگوها */}
+            <div className="flex items-center gap-8 mx-8">
+              {brands.map((brand) => (
+                <div
+                  key={`${brand.src}-1`}
+                  className="flex-shrink-0 w-30 h-30 bg-white rounded-2xl shadow-md flex items-center justify-center p-4"
+                >
+                  <Image
+                    src={brand.src}
+                    alt={brand.name}
+                    width={100}
+                    height={100}
+                    className="object-contain"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* دومین کپی دقیقاً مشابه برای حلقه بی‌نهایت */}
+            <div className="flex items-center gap-8 mx-8">
+              {brands.map((brand) => (
+                <div
+                  key={`${brand.src}-2`}
+                  className="flex-shrink-0 w-30 h-30 bg-white rounded-2xl shadow-md flex items-center justify-center p-4"
+                >
+                  <Image
+                    src={brand.src}
+                    alt={brand.name}
+                    width={100}
+                    height={100}
+                    className="object-contain"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* ==================== پایان بخش برندها ==================== */}
+
       <h4 className="text-center azarMehr mb-10 text-primary">
         وبلاگ آریا کیش
       </h4>
-      <div className="grid lg:grid-cols-12  grid-cols-1 items-center gap-4 mb-16">
+
+      <div className="grid lg:grid-cols-12 grid-cols-1 items-center gap-4 mb-16">
         {/* First Column */}
         <div className="col-span-4 space-y-4">
-          {firstColumnPosts.map((post, key) => (
+          {firstColumnPosts.map((post: any, key: number) => (
             <Link
               key={key}
               href={`/blog/${post.slug}`}
@@ -210,7 +335,7 @@ export default async function Home() {
                     width={0}
                     height={0}
                     sizes="100vw"
-                    className=" rounded-[40px] w-[152px] h-[152px] object-cover"
+                    className="rounded-[40px] w-[152px] h-[152px] object-cover"
                     src={post?._embedded["wp:featuredmedia"][0]?.source_url}
                   />
                 )}
@@ -255,7 +380,7 @@ export default async function Home() {
 
         {/* Third Column */}
         <div className="col-span-4">
-          {thirdColumnPosts.map((post) => (
+          {thirdColumnPosts.map((post: any) => (
             <Link
               href={`/blog/${post.slug}`}
               key={post.id}
@@ -267,6 +392,7 @@ export default async function Home() {
           ))}
         </div>
       </div>
+
       <div className="text-center">
         <Link
           className="px-8 py-3 border text-xs rounded-2xl border-secondary text-secondary"
