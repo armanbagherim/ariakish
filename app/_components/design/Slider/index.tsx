@@ -1,14 +1,13 @@
 'use client'
 
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination, Autoplay, Scrollbar, A11y } from 'swiper/modules'
+import { Pagination, Autoplay, Scrollbar, A11y } from 'swiper/modules'
 import { Swiper as SwiperType } from 'swiper'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import 'swiper/css'
-import 'swiper/css/navigation'
 import 'swiper/css/pagination'
 import 'swiper/css/scrollbar'
-import { HiArrowLeft, HiArrowRight } from 'react-icons/hi2'
+import { HiChevronLeft, HiChevronRight } from 'react-icons/hi2'
 
 export interface SliderProps {
     children: React.ReactNode[]
@@ -20,10 +19,6 @@ export interface SliderProps {
         delay: number
         disableOnInteraction?: boolean
         pauseOnMouseEnter?: boolean
-    }
-    navigation?: boolean | {
-        nextEl?: string | HTMLElement
-        prevEl?: string | HTMLElement
     }
     pagination?: boolean | {
         clickable?: boolean
@@ -47,6 +42,9 @@ export interface SliderProps {
     speed?: number
     effect?: 'slide' | 'fade' | 'cube' | 'flip' | 'coverflow' | 'creative'
     direction?: 'horizontal' | 'vertical'
+    autoHeight?: boolean
+    // ما این prop را برای نمایش یا عدم نمایش دکمه‌های سفارشی نگه می‌داریم
+    navigation?: boolean 
 }
 
 const Slider = ({
@@ -56,7 +54,6 @@ const Slider = ({
     centeredSlides = false,
     loop = false,
     autoplay = false,
-    navigation = false,
     pagination = false,
     scrollbar = false,
     breakpoints,
@@ -73,13 +70,17 @@ const Slider = ({
     freeMode = false,
     speed = 300,
     effect = 'slide',
-    direction = 'horizontal'
+    direction = 'horizontal',
+    autoHeight = false,
+    navigation = true, // به طور پیش‌فرض دکمه‌ها را نشان می‌دهیم
 }: SliderProps) => {
     const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null)
-    const prevRef = useRef<HTMLButtonElement>(null)
-    const nextRef = useRef<HTMLButtonElement>(null)
+    const [isBeginning, setIsBeginning] = useState(true)
+    const [isEnd, setIsEnd] = useState(false)
+    const [isHovered, setIsHovered] = useState(false)
 
-    const modules = [Navigation, Pagination, Autoplay, Scrollbar, A11y]
+    // ماژول Navigation را دیگر نیازی نداریم
+    const modules = [Pagination, Autoplay, Scrollbar, A11y]
 
     const swiperConfig = {
         spaceBetween,
@@ -87,16 +88,21 @@ const Slider = ({
         centeredSlides,
         loop,
         autoplay: autoplay === true ? { delay: 3000 } : autoplay,
-        navigation: navigation === true ? {
-            prevEl: prevRef.current,
-            nextEl: nextRef.current,
-        } : navigation,
+        // prop navigation را حذف می‌کنیم چون خودمان آن را پیاده‌سازی می‌کنیم
         pagination: pagination === true ? { clickable: true } : pagination,
         scrollbar: scrollbar === true ? { draggable: true } : scrollbar,
         breakpoints,
-        onSlideChange,
+        onSlideChange: (swiper: SwiperType) => {
+            // وضعیت دکمه‌ها را با هر تغییر اسلاید آپدیت می‌کنیم
+            setIsBeginning(swiper.isBeginning)
+            setIsEnd(swiper.isEnd)
+            onSlideChange?.(swiper)
+        },
         onSwiper: (swiper: SwiperType) => {
             setSwiperInstance(swiper)
+            // وضعیت اولیه دکمه‌ها را تنظیم می‌کنیم
+            setIsBeginning(swiper.isBeginning)
+            setIsEnd(swiper.isEnd)
             onSwiper?.(swiper)
         },
         allowTouchMove,
@@ -109,11 +115,27 @@ const Slider = ({
         speed,
         effect,
         direction,
+        autoHeight,
         modules
     }
 
+    // استایل پایه برای دکمه‌های ما
+    const navButtonClass = `
+        absolute top-1/2 -translate-y-1/2 z-10 w-12 h-12 
+        flex items-center justify-center 
+        bg-white/20 backdrop-blur-md border border-white/30 
+        text-white rounded-full 
+        transition-all duration-300 ease-in-out
+        ${isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-90'}
+    `
+
     return (
-        <div dir="ltr" className={`relative ${className}`}>
+        <div 
+            dir="ltr" 
+            className={`relative group ${className}`}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
             <Swiper {...swiperConfig}>
                 {children.map((child, index) => (
                     <SwiperSlide key={index} className={slideClassName}>
@@ -122,21 +144,33 @@ const Slider = ({
                 ))}
             </Swiper>
 
-            {navigation === true && (
+            {navigation && (
                 <>
                     <button
-                        ref={prevRef}
-                        className="swiper-button-prev !absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                        className={`${navButtonClass} left-4`}
+                        onClick={() => swiperInstance?.slidePrev()}
+                        disabled={isBeginning}
                         aria-label="Previous slide"
+                        style={{
+                            pointerEvents: isBeginning ? 'none' : 'auto', // جلوگیری از کلیک در حالت غیرفعال
+                            cursor: isBeginning ? 'not-allowed' : 'pointer',
+                            opacity: isBeginning ? 0.5 : (isHovered ? 1 : 0), // شفافیت کمتر در حالت غیرفعال
+                        }}
                     >
-                        <HiArrowLeft size={10} />
+                        <HiChevronLeft size={24} />
                     </button>
                     <button
-                        ref={nextRef}
-                        className="swiper-button-next !absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-gray-800 rounded-full w-10 h-10 flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110"
+                        className={`${navButtonClass} right-4`}
+                        onClick={() => swiperInstance?.slideNext()}
+                        disabled={isEnd}
                         aria-label="Next slide"
+                        style={{
+                            pointerEvents: isEnd ? 'none' : 'auto',
+                            cursor: isEnd ? 'not-allowed' : 'pointer',
+                            opacity: isEnd ? 0.5 : (isHovered ? 1 : 0),
+                        }}
                     >
-                        <HiArrowRight size={10} />
+                        <HiChevronRight size={24} />
                     </button>
                 </>
             )}

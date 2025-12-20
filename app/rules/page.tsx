@@ -17,6 +17,7 @@ export default async function Page() {
   return (
     <div className="container mt-14 mx-auto px-4">
       <div className="border border-gray-300 rounded-3xl p-8">
+        <img src="/slider/home2.jpg" className="rounded-3xl mb-8"/>
         {/* <h1 className="text-md md:text-xl font-bold mb-4">
           شرایط استفاده از گارانتی
         </h1>

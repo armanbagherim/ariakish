@@ -4,14 +4,11 @@ import Image from 'next/image'
 const HeroSlider = () => {
     const sliderImages = [
         '/slider/home1.jpg',
-        '/slider/home2.jpg',
         '/slider/home3.jpg',
         '/slider/home4.jpg',
         '/slider/home5.jpg',
         '/slider/home6.jpg',
-        '/slider/home7.jpg',
-        '/slider/home8.jpg',
-        '/slider/home9.jpg'
+        '/slider/home9.jpg',
     ]
 
     return (
@@ -21,6 +18,7 @@ const HeroSlider = () => {
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true
             }}
+            autoHeight
             navigation={true}
             loop={true}
             effect="slide"
