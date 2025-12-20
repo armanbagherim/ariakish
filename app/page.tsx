@@ -1,16 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Clock,
-  FlowMobile,
-  Flows,
   OpenLinkFill,
   OpenLinkOutline,
 } from "./_components/design/icons";
 import React from "react";
 import PureCarousel from "./_components/design/Carousel/PureCarousel";
-import Timer from "./_components/design/Timer";
 import HeroSlider from "./_components/design/Slider/HeroSlider";
+import Marquee from "react-fast-marquee";
 
 const getBlog = async () => {
   const data = await fetch(
@@ -47,7 +44,6 @@ const getPublicReports = async () => {
   return publicReports;
 };
 
-// آرایه برندها - دقیقاً همان‌های صفحه brands
 const brands = [
   { src: "/brands/aap-pro.png", name: "aap-pro" },
   { src: "/brands/AILY-DIGITAL.png", name: "AILY-DIGITAL" },
@@ -176,7 +172,7 @@ export default async function Home() {
 
       <div className="grid grid-cols-1 md:grid-cols-1 items-center pb- md:pb-14 md:mb-8">
         <div>
-          <h1 className="text-[28px] azarMehr text-primary mb-4 ">
+          <h1 className="text-[28px] azarMehr text-primary mb-4">
             گارانتی آریا کیش
           </h1>
           <p className="font-light leading-7 text-justify text-md md:text-lg mb-6">
@@ -250,8 +246,8 @@ export default async function Home() {
       </div>
 
       {/* ==================== بخش برندهای تحت گارانتی ==================== */}
-      <div className="mt-10 mb-4">
-        <div className=" mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="mt-10 mb-8 px-4">
+        <div className="mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h2 className="text-xl md:text-xl font-bold text-primary azarMehr">
             برندهای تحت گارانتی
           </h2>
@@ -264,55 +260,40 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Marquee با جهت معکوس + لوگوهای کوچکتر و بیشتر */}
-      <div className="relative overflow-hidden bg-gray-100 py-12 rounded-3xl mb-8">
-        {/* گرادیان محو در دو طرف */}
-        <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-gray-100 to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-gray-100 to-transparent z-10 pointer-events-none" />
+      {/* Marquee شیک با react-fast-marquee */}
+      <div dir="ltr">
+        <Marquee
+        direction="right"  // چپ به راست (معکوس)
+        speed={40}     
+        loop={0}    // سرعت (کمتر = کندتر، می‌تونی 30 یا 50 تست کنی)
+        pauseOnHover={true}
+        gradient={true}
+        autoFill
 
-        <div className="animate-marquee">
-          <div className="marquee">
-            {/* اولین کپی از لوگوها */}
-            <div className="flex items-center gap-8 mx-8">
-              {brands.map((brand) => (
-                <div
-                  key={`${brand.src}-1`}
-                  className="flex-shrink-0 w-30 h-30 bg-white rounded-2xl shadow-md flex items-center justify-center p-4"
-                >
-                  <Image
-                    src={brand.src}
-                    alt={brand.name}
-                    width={100}
-                    height={100}
-                    className="object-contain"
-                  />
-                </div>
-              ))}
-            </div>
-
-            {/* دومین کپی دقیقاً مشابه برای حلقه بی‌نهایت */}
-            <div className="flex items-center gap-8 mx-8">
-              {brands.map((brand) => (
-                <div
-                  key={`${brand.src}-2`}
-                  className="flex-shrink-0 w-30 h-30 bg-white rounded-2xl shadow-md flex items-center justify-center p-4"
-                >
-                  <Image
-                    src={brand.src}
-                    alt={brand.name}
-                    width={100}
-                    height={100}
-                    className="object-contain"
-                  />
-                </div>
-              ))}
-            </div>
+        gradientColor="#f3f4f6"  // رنگ پس‌زمینه برای fade دو طرف (bg-gray-100)
+        gradientWidth="8rem"
+        className="py-12 rounded-3xl overflow-hidden bg-gray-100"
+      >
+        {brands.map((brand) => (
+          <div
+            key={brand.src}
+            className="mx-4 flex-shrink-0 w-30 h-30 bg-white rounded-2xl shadow-md flex items-center justify-center p-4"
+          >
+            <Image
+              src={brand.src}
+              alt={brand.name}
+              width={100}
+              height={100}
+              className="object-contain"
+            />
           </div>
-        </div>
+        ))}
+      </Marquee>
       </div>
+
       {/* ==================== پایان بخش برندها ==================== */}
 
-      <h4 className="text-center azarMehr mb-10 text-primary">
+      <h4 className="text-center azarMehr mb-10 text-primary mt-16">
         وبلاگ آریا کیش
       </h4>
 
@@ -325,10 +306,7 @@ export default async function Home() {
               href={`/blog/${post.slug}`}
               className="relative block"
             >
-              <div
-                key={post.id}
-                className="flex border border-[#CFD2E3] gap-4 rounded-[55px] px-6 py-6"
-              >
+              <div className="flex border border-[#CFD2E3] gap-4 rounded-[55px] px-6 py-6">
                 {post?._embedded["wp:featuredmedia"] !== undefined && (
                   <Image
                     alt=""
@@ -353,7 +331,7 @@ export default async function Home() {
         <div className="col-span-4 pin relative">
           {stickyPost && (
             <Link href={`/blog/${stickyPost.slug}`}>
-              <div key={stickyPost.id} className="mb-4">
+              <div className="mb-4">
                 <Image
                   alt=""
                   width={0}
