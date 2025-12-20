@@ -10,6 +10,7 @@ import {
 import React from "react";
 import PureCarousel from "./_components/design/Carousel/PureCarousel";
 import Timer from "./_components/design/Timer";
+import HeroSlider from "./_components/design/Slider/HeroSlider";
 
 const getBlog = async () => {
   const data = await fetch(
@@ -50,8 +51,8 @@ export default async function Home() {
   const blogData = await getBlog();
   const { result: vipCards } = await getVipCards();
   const { result: publicReports } = await getPublicReports();
-  const stickyPost = blogData.find((post) => post.sticky);
-  const nonStickyPosts = blogData.filter((post) => !post.sticky);
+  const stickyPost = blogData.find((post: any) => post.sticky);
+  const nonStickyPosts = blogData.filter((post: any) => !post.sticky);
   const firstColumnPosts = nonStickyPosts.slice(0, 2);
   const thirdColumnPosts = nonStickyPosts.slice(2, 6);
 
@@ -68,7 +69,10 @@ export default async function Home() {
   }
   return (
     <div className="container mx-auto pt-10 md:pt-28 px-4 md:px-0">
-      <div className="grid grid-cols-1 md:grid-cols-2 items-center pb- md:pb-14 md:mb-8">
+      <div className="my-12">
+        <HeroSlider />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-1 items-center pb- md:pb-14 md:mb-8">
         <div>
           <h1 className="text-[28px] azarMehr text-primary mb-4 ">
             گارانتی آریا کیش
@@ -96,16 +100,7 @@ export default async function Home() {
             </Link> */}
           </div>
         </div>
-        <div className="-order-1 md:order-2 md:mb-0 md:p-8 mb-8 md:px-12 px-0">
-          <Image
-            alt="آریاکیش"
-            width={0}
-            height={0}
-            sizes="100vw"
-            className="w-full"
-            src="/kitchen.png"
-          />
-        </div>
+
       </div>
       {/* <div id="about" className="md:px-[10%] block py-12 mb-8 md:mb-20">
         <div className="text-center drop md:px-[10%] px-8 md:py-[50px] py-6 rounded-[40px] md:rounded-[70px]">
@@ -194,7 +189,7 @@ export default async function Home() {
       <div className="grid lg:grid-cols-12  grid-cols-1 items-center gap-4 mb-16">
         {/* First Column */}
         <div className="col-span-4 space-y-4">
-          {firstColumnPosts.map((post, key) => (
+          {firstColumnPosts.map((post: any, key: number) => (
             <Link
               key={key}
               href={`/blog/${post.slug}`}
@@ -255,7 +250,7 @@ export default async function Home() {
 
         {/* Third Column */}
         <div className="col-span-4">
-          {thirdColumnPosts.map((post) => (
+          {thirdColumnPosts.map((post: any) => (
             <Link
               href={`/blog/${post.slug}`}
               key={post.id}
