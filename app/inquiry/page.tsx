@@ -3,6 +3,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { ConvertToNull } from "../_components/Utils/ConvertToNull";
 import { fetcher } from "../_components/design/fetcher";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 function InquiryContent() {
   const [cardNumber, setCardNumber] = useState("");
@@ -216,9 +217,10 @@ function InquiryContent() {
         </div>
 
         <div className="mt-6 text-center">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 mb-2">
             با وارد کردن شماره کارت گارانتی، می‌توانید از وضعیت و جزئیات گارانتی محصول خود مطلع شوید.
           </p>
+          <Link href="/rules" className="text-md hover:bg-gray-700 transition-all bg-primary rounded-lg w-full p-4 block text-white">جهت مشاهده شرایط گارانتی <span className="text-bold">کلیک</span> کنید</Link>
         </div>
       </div>
     </div>

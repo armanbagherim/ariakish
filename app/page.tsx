@@ -44,7 +44,7 @@ const getPublicReports = async () => {
   return publicReports;
 };
 
-const brands = [
+export const brands = [
   { src: "/brands/aap-pro.png", name: "aap-pro" },
   { src: "/brands/AILY-DIGITAL.png", name: "AILY-DIGITAL" },
   { src: "/brands/aiwa.png", name: "aiwa" },
@@ -87,7 +87,6 @@ const brands = [
   { src: "/brands/hisense.png", name: "hisense" },
   { src: "/brands/hp.png", name: "hp" },
   { src: "/brands/HPE.png", name: "HPE" },
-  { src: "/brands/IDHILIDS.png", name: "IDHILIDS" },
   { src: "/brands/intel.png", name: "intel" },
   { src: "/brands/jack.png", name: "jack" },
   { src: "/brands/jasco.png", name: "jasco" },
@@ -141,6 +140,12 @@ const brands = [
   { src: "/brands/WORLDEN.png", name: "WORLDEN" },
   { src: "/brands/xiaomi.png", name: "xiaomi" },
   { src: "/brands/YESHI.png", name: "YESHI" },
+  { src: "/brands/smeg.png", name: "smeg" },
+  { src: "/brands/braun.png", name: "braun" },
+  { src: "/brands/nespresso.png", name: "nespresso" },
+  { src: "/brands/ninja.png", name: "ninja" },
+  { src: "/brands/philips.png", name: "philips" },
+  { src: "/brands/brilux.png", name: "brilux" },
 ];
 
 export default async function Home() {
@@ -244,7 +249,9 @@ export default async function Home() {
           <div>درخواست تعمیر</div>
         </div>
       </div>
-
+      <Link href="brilux-brand" >
+        <img className="rounded-3xl" src="/slider/home-brilux.png" />
+      </Link>
       {/* ==================== بخش برندهای تحت گارانتی ==================== */}
       <div className="mt-10 mb-8 px-4">
         <div className="mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
