@@ -18,25 +18,26 @@ const HeroSlider = () => {
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true
             }}
-            autoHeight
+            // حذف autoHeight برای کنترل دقیق ارتفاع
             navigation={true}
             loop={true}
             effect="slide"
             speed={800}
-            className="md:h-[600px] rounded-2xl overflow-hidden"
+            // استفاده از aspect ratio برای دسکتاپ و موبایل
+            className="w-full aspect-[2/1] md:aspect-[21/9] lg:max-h-[400px] rounded-3xl  overflow-hidden shadow-lg"
             slideClassName="h-full"
         >
             {sliderImages.map((imageSrc, index) => (
-                <div key={index} className="relative h-full">
+                <div key={index} className="relative w-full h-full">
                     <Image
                         src={imageSrc}
                         alt={`Hero slide ${index + 1}`}
-                        width={0}
-                        height={0}
-                        sizes='100vw'
-                        style={{ width: '100%', height: 'auto' }} // optional
-
-                        className="object-cover"
+                        // برگشت به متد عرض ۱۰۰٪ اما با کنترل ارتفاع در والد
+                        width={1920}
+                        height={1080}
+                        sizes="100vw"
+                        // این بخش جادویی کار است:
+                        className="w-full h-full object-cover object-center"
                         priority={index === 0}
                     />
                 </div>

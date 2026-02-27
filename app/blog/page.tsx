@@ -12,7 +12,7 @@ async function getPosts() {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_BLOG_BASE_URL}/wp-json/wp/v2/posts?_embed`,
     {
-      cache: "force-cache",
+      cache: "no-store",
     }
   );
   const post = await res.json();
