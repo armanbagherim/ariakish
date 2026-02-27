@@ -14,6 +14,7 @@ const getBlog = async () => {
     `${process.env.NEXT_PUBLIC_BLOG_BASE_URL}/wp-json/wp/v2/posts?_embed`,
     {
       cache: "no-store",
+      method: "GET",
     }
   );
   const posts = await data.json();
@@ -152,10 +153,17 @@ export default async function Home() {
   const blogData = await getBlog();
   const { result: vipCards } = await getVipCards();
   const { result: publicReports } = await getPublicReports();
-  const stickyPost = blogData.find((post: any) => post.sticky);
-  const nonStickyPosts = blogData.filter((post: any) => !post.sticky);
-  const firstColumnPosts = nonStickyPosts.slice(0, 2);
-  const thirdColumnPosts = nonStickyPosts.slice(2, 6);
+
+  // پیدا کردن پست sticky (featured)
+  const stickyPost = blogData.find((post: any) => post.sticky === true);
+
+  // پست‌های معمولی (غیر sticky)
+  const nonStickyPosts = blogData.filter((post: any) => post.sticky !== true);
+
+  // ترکیب برای نمایش در گرید: sticky اول + بقیه
+  const allPosts = stickyPost
+    ? [stickyPost, ...nonStickyPosts]
+    : nonStickyPosts;
 
   function formatNumberCompact(num: number): string {
     if (num >= 1_000_000_000) {
@@ -249,9 +257,11 @@ export default async function Home() {
           <div>درخواست تعمیر</div>
         </div>
       </div>
-      <Link href="brilux-brand" >
-        <img className="rounded-3xl" src="/slider/home-brilux.png" />
+
+      <Link href="brilux-brand">
+        <img className="rounded-3xl" src="/slider/home-brilux.png" alt="Brilux Banner" />
       </Link>
+
       {/* ==================== بخش برندهای تحت گارانتی ==================== */}
       <div className="mt-10 mb-8 px-4">
         <div className="mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -267,123 +277,115 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Marquee شیک با react-fast-marquee */}
       <div dir="ltr">
         <Marquee
-        direction="right"  // چپ به راست (معکوس)
-        speed={40}     
-        loop={0}    // سرعت (کمتر = کندتر، می‌تونی 30 یا 50 تست کنی)
-        pauseOnHover={true}
-        gradient={true}
-        autoFill
-
-        gradientColor="#f3f4f6"  // رنگ پس‌زمینه برای fade دو طرف (bg-gray-100)
-        gradientWidth="8rem"
-        className="py-12 rounded-3xl overflow-hidden bg-gray-100"
-      >
-        {brands.map((brand) => (
-          <div
-            key={brand.src}
-            className="mx-4 flex-shrink-0 w-30 h-30 bg-white rounded-2xl shadow-md flex items-center justify-center p-4"
-          >
-            <Image
-              src={brand.src}
-              alt={brand.name}
-              width={100}
-              height={100}
-              className="object-contain"
-            />
-          </div>
-        ))}
-      </Marquee>
+          direction="right"
+          speed={40}
+          loop={0}
+          pauseOnHover={true}
+          gradient={true}
+          autoFill
+          gradientColor="#f3f4f6"
+          gradientWidth="8rem"
+          className="py-12 rounded-3xl overflow-hidden bg-gray-100"
+        >
+          {brands.map((brand) => (
+            <div
+              key={brand.src}
+              className="mx-4 flex-shrink-0 w-30 h-30 bg-white rounded-2xl shadow-md flex items-center justify-center p-4"
+            >
+              <Image
+                src={brand.src}
+                alt={brand.name}
+                width={100}
+                height={100}
+                className="object-contain"
+              />
+            </div>
+          ))}
+        </Marquee>
       </div>
 
-      {/* ==================== پایان بخش برندها ==================== */}
+      <div className="container mx-auto px-4 py-12 mt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
 
-      <h4 className="text-center azarMehr mb-10 text-primary mt-16">
-        وبلاگ آریا کیش
-      </h4>
-
-      <div className="grid lg:grid-cols-12 grid-cols-1 items-center gap-4 mb-16">
-        {/* First Column */}
-        <div className="col-span-4 space-y-4">
-          {firstColumnPosts.map((post: any, key: number) => (
-            <Link
-              key={key}
-              href={`/blog/${post.slug}`}
-              className="relative block"
-            >
-              <div className="flex border border-[#CFD2E3] gap-4 rounded-[55px] px-6 py-6">
-                {post?._embedded["wp:featuredmedia"] !== undefined && (
-                  <Image
-                    alt=""
-                    width={0}
-                    height={0}
-                    sizes="100vw"
-                    className="rounded-[40px] w-[152px] h-[152px] object-cover"
-                    src={post?._embedded["wp:featuredmedia"][0]?.source_url}
-                  />
-                )}
-                <div>
-                  <h4 className="azarMehr text-base mb-4">
-                    {post?.title?.rendered}
-                  </h4>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* Middle Column (Sticky Post) */}
-        <div className="col-span-4 pin relative">
-          {stickyPost && (
-            <Link href={`/blog/${stickyPost.slug}`}>
-              <div className="mb-4">
-                <Image
-                  alt=""
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  className="w-full rounded-[60px]"
-                  src={stickyPost?._embedded["wp:featuredmedia"][0]?.source_url}
-                />
-                <div className="absolute bottom-0 py-10 flex items-start flex-col justify-center blogGradiant left-0 right-0 px-4">
-                  <div className="flex justify-between w-full">
-                    <div>
-                      <h2 className="azarMehr text-2xl text-white mb-4">
-                        {stickyPost.title.rendered}
-                      </h2>
-                    </div>
-                    <OpenLinkOutline />
+          {/* Left Column: The Main Featured Post (Sticky) */}
+          <div className="lg:col-span-7 xl:col-span-8">
+            {allPosts.slice(0, 1).map((post) => {
+              const featuredImage = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
+              return (
+                <Link key={post.id} href={`/blog/${post.slug}`} className="group relative block overflow-hidden rounded-3xl bg-gray-900">
+                  <div className="aspect-[16/10] w-full overflow-hidden">
+                    {featuredImage && (
+                      <Image
+                        src={featuredImage}
+                        alt={post.title.rendered}
+                        fill
+                        className="object-cover opacity-80 transition-all duration-700 group-hover:scale-110 group-hover:opacity-100"
+                        priority
+                      />
+                    )}
                   </div>
-                </div>
-              </div>
-              <div className="w-[304px] mx-auto absolute left-0 right-0 -bottom-4 h-28 bg-blue-600/75 rounded-[48px] blur-[48px] -z-10" />
-            </Link>
-          )}
-        </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                  <div className="absolute bottom-0 p-6 md:p-10 space-y-4 text-right" dir="rtl">
+                    <span className="inline-block px-3 py-1 text-xs font-bold tracking-widest text-black bg-yellow-400 rounded-full uppercase">
+                      مطلب ویژه
+                    </span>
+                    <h2 className="text-2xl md:text-4xl font-bold text-white leading-tight group-hover:text-yellow-400 transition-colors">
+                      {post.title.rendered}
+                    </h2>
+                    <p className="text-gray-300 text-sm md:text-base line-clamp-2 max-w-2xl">
+                      {/* Optional: Add excerpt here if available */}
+                      مشاهده متن کامل این گزارش و تحلیل تخصصی...
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
 
-        {/* Third Column */}
-        <div className="col-span-4">
-          {thirdColumnPosts.map((post: any) => (
-            <Link
-              href={`/blog/${post.slug}`}
-              key={post.id}
-              className="mb-4 border border-[#CFD2E3] flex justify-between p-4 rounded-[30px] items-center"
-            >
-              <h2>{post.title.rendered}</h2>
-              <OpenLinkFill />
-            </Link>
-          ))}
+          {/* Right Column: The Vertical Feed */}
+          <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-8">
+            <h3 className="text-xl font-bold border-r-4 border-yellow-400 pr-4 mb-2 text-gray-800" dir="rtl">
+              آخرین نوشته‌ها
+            </h3>
+
+            {allPosts.slice(1, 5).map((post) => {
+              const featuredImage = post._embedded?.["wp:featuredmedia"]?.[0]?.source_url;
+              return (
+                <Link key={post.id} href={`/blog/${post.slug}`} className="group flex gap-4 items-start" dir="rtl">
+                  <div className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-2xl bg-gray-100">
+                    {featuredImage && (
+                      <Image
+                        src={featuredImage}
+                        alt={post.title.rendered}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-col justify-center py-1">
+                    <h4 className="text-sm md:text-base font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 leading-snug">
+                      {post.title.rendered}
+                    </h4>
+                    <time className="mt-2 text-[11px] text-gray-400 font-medium">
+                      {/* Replace with actual date if available */}
+                      ۵ دقیقه مطالعه
+                    </time>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <div className="text-center">
+      <div className="text-center mt-6">
         <Link
-          className="px-8 py-3 border text-xs rounded-2xl border-secondary text-secondary"
+          className="inline-flex items-center gap-2 text-sm text-secondary hover:text-secondary/80 transition-colors"
           href="/blog"
         >
-          همه مطالب
+          مشاهده همه مطالب
         </Link>
       </div>
     </div>
